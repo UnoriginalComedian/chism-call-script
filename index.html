@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chism Brothers Painting — Call Script</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap');
+
+  :root{
+    --paper:#FAF7F1;
+    --paper-raised:#FFFFFF;
+    --ink:#20241F;
+    --ink-soft:#5B6158;
+    --line:#E4DFD2;
+    --pine:#1E4A3F;
+    --pine-deep:#123229;
+    --clay:#BD5B34;
+    --clay-soft:#F3E2D6;
+    --slate:#4C6B8A;
+    --slate-soft:#DFE7EE;
+    --gold:#D8A93B;
+    --radius:14px;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    padding:28px 18px 80px;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .wrap{max-width:720px;margin:0 auto;}
+
+  header{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:22px;
+    padding-bottom:18px;
+    border-bottom:2px solid var(--pine);
+  }
+  .brand-eyebrow{
+    font-size:11px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    font-weight:600;
+    margin:0 0 4px;
+  }
+  h1{
+    font-family:'Roboto Slab',serif;
+    font-size:26px;
+    margin:0;
+    color:var(--pine-deep);
+    line-height:1.15;
+  }
+  .call-clock{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    color:var(--ink-soft);
+    text-align:right;
+    white-space:nowrap;
+  }
+  .call-clock b{color:var(--pine-deep); font-size:16px;}
+
+  .greeting-card{
+    background:var(--pine);
+    color:var(--paper);
+    border-radius:var(--radius);
+    padding:16px 18px;
+    margin-bottom:20px;
+    font-size:15px;
+    line-height:1.5;
+    position:relative;
+  }
+  .greeting-card .tag{
+    font-size:10px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    opacity:.75;
+    display:block;
+    margin-bottom:6px;
+    font-weight:600;
+  }
+  .greeting-card .say{
+    font-style:italic;
+  }
+  .greeting-card input{
+    background:rgba(255,255,255,0.15);
+    border:1px solid rgba(255,255,255,0.4);
+    color:#fff;
+    border-radius:6px;
+    padding:3px 8px;
+    font-size:14px;
+    font-style:italic;
+    font-family:inherit;
+    width:130px;
+  }
+  .greeting-card input::placeholder{color:rgba(255,255,255,0.6);}
+
+  .swatch-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-bottom:22px;
+  }
+  .swatch{
+    border:2px solid var(--line);
+    background:var(--paper-raised);
+    border-radius:var(--radius);
+    padding:16px;
+    cursor:pointer;
+    text-align:left;
+    transition:border-color .15s, transform .1s;
+    font-family:'Inter',sans-serif;
+  }
+  .swatch:active{transform:scale(.98);}
+  .swatch .chip{
+    width:100%;
+    height:10px;
+    border-radius:4px;
+    margin-bottom:10px;
+  }
+  .swatch.res .chip{background:var(--clay);}
+  .swatch.com .chip{background:var(--slate);}
+  .swatch-label{
+    font-family:'Roboto Slab',serif;
+    font-size:17px;
+    font-weight:700;
+    margin:0 0 2px;
+  }
+  .swatch-sub{font-size:12.5px; color:var(--ink-soft); margin:0;}
+  .swatch.selected{border-color:var(--pine); box-shadow:0 0 0 3px rgba(30,74,63,0.12);}
+  .swatch.res.selected{border-color:var(--clay); box-shadow:0 0 0 3px rgba(189,91,52,0.15);}
+  .swatch.com.selected{border-color:var(--slate); box-shadow:0 0 0 3px rgba(76,107,138,0.15);}
+
+  .step{
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px 18px 20px;
+    margin-bottom:14px;
+    display:none;
+  }
+  .step.active{display:block; animation:fadeIn .25s ease;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  .step-head{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .step-num{
+    width:24px; height:24px;
+    border-radius:50%;
+    background:var(--pine);
+    color:#fff;
+    font-size:12px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+  .step-title{
+    font-family:'Roboto Slab',serif;
+    font-size:16px;
+    font-weight:700;
+    color:var(--pine-deep);
+    margin:0;
+  }
+
+  .script-line{
+    background:var(--clay-soft);
+    border-left:3px solid var(--clay);
+    padding:9px 12px;
+    border-radius:6px;
+    font-style:italic;
+    font-size:14px;
+    line-height:1.45;
+    margin-bottom:10px;
+  }
+  .com .script-line{background:var(--slate-soft); border-left-color:var(--slate);}
+
+  label{
+    display:block;
+    font-size:11.5px;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    font-weight:600;
+    margin:12px 0 5px;
+  }
+  input[type=text], input[type=tel], input[type=email], textarea{
+    width:100%;
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    padding:10px 11px;
+    font-size:15px;
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    background:#fff;
+  }
+  input:focus, textarea:focus{outline:2px solid var(--pine); outline-offset:1px; border-color:var(--pine);}
+  textarea{resize:vertical; min-height:56px;}
+
+  .btn-group{display:flex; flex-wrap:wrap; gap:8px; margin-top:2px;}
+  .opt-btn{
+    border:1.5px solid var(--line);
+    background:#fff;
+    border-radius:20px;
+    padding:8px 14px;
+    font-size:13.5px;
+    font-weight:500;
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+  }
+  .opt-btn.picked{
+    background:var(--pine);
+    border-color:var(--pine);
+    color:#fff;
+  }
+
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+
+  .skip-toggle{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:12px;
+    font-size:13.5px;
+    color:var(--ink-soft);
+  }
+  .skip-toggle input{width:16px;height:16px;}
+
+  .conditional{display:none;}
+  .conditional.show{display:block;}
+
+  .nav-buttons{
+    display:flex;
+    justify-content:space-between;
+    margin-top:18px;
+  }
+  .btn{
+    border:none;
+    border-radius:8px;
+    padding:10px 18px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+  }
+  .btn-primary{background:var(--pine); color:#fff;}
+  .btn-ghost{background:transparent; color:var(--ink-soft); border:1.5px solid var(--line);}
+  .btn-primary:disabled{opacity:.4; cursor:not-allowed;}
+
+  .close-card{
+    background:var(--paper-raised);
+    border:1px dashed var(--pine);
+    border-radius:var(--radius);
+    padding:16px 18px;
+    margin-top:16px;
+    font-style:italic;
+    font-size:14.5px;
+    color:var(--pine-deep);
+  }
+
+  .summary-bar{
+    position:fixed;
+    bottom:0; left:0; right:0;
+    background:var(--pine-deep);
+    padding:12px 16px;
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    box-shadow:0 -4px 16px rgba(0,0,0,0.15);
+  }
+  .summary-bar button{
+    flex:1;
+    max-width:230px;
+    border:none;
+    border-radius:9px;
+    padding:12px 10px;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+  }
+  .copy-btn{background:var(--gold); color:var(--pine-deep);}
+  .reset-btn{background:transparent; color:#fff; border:1.5px solid rgba(255,255,255,0.4) !important;}
+  .copy-btn.copied{background:var(--pine); color:#fff;}
+
+  .progress-dots{display:flex; gap:5px; margin:2px 0 18px;}
+  .dot{height:5px; flex:1; border-radius:3px; background:var(--line);}
+  .dot.done{background:var(--pine);}
+
+  @media (max-width:480px){
+    h1{font-size:21px;}
+    .row2{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <p class="brand-eyebrow">Chism Brothers Painting</p>
+      <h1>Answering Service Script</h1>
+    </div>
+    <div style="text-align:right;">
+      <div class="call-clock">
+        Call time<br><b id="clock">00:00</b>
+      </div>
+      <button id="logBtn" onclick="openLog()" style="margin-top:6px; background:none; border:1px solid var(--line); color:var(--ink-soft); font-size:11.5px; padding:4px 9px; border-radius:6px; cursor:pointer; font-family:'Inter',sans-serif;">📋 Call Log</button>
+    </div>
+  </header>
+
+  <div class="greeting-card">
+    <span class="tag">Greeting — every call</span>
+    <span class="say">"Good morning/afternoon! Thank you for calling Chism Brothers Painting — this is
+      <input type="text" id="agentName" placeholder="your name"> , how can I assist you today?"</span>
+  </div>
+
+  <div class="progress-dots" id="progressDots"></div>
+
+  <!-- STEP 0: PROJECT TYPE -->
+  <div class="swatch-row" id="typeSwatches">
+    <button class="swatch res" data-type="residential">
+      <span class="chip"></span>
+      <p class="swatch-label">Residential</p>
+      <p class="swatch-sub">Homeowner project</p>
+    </button>
+    <button class="swatch com" data-type="commercial">
+      <span class="chip"></span>
+      <p class="swatch-label">Commercial</p>
+      <p class="swatch-sub">Business / property</p>
+    </button>
+  </div>
+
+  <!-- STEP 1: CALLER INFO -->
+  <div class="step" id="step1">
+    <div class="step-head"><div class="step-num">1</div><h3 class="step-title">Caller Info</h3></div>
+
+    <div class="script-line">"What type of painting project did you have in mind?" <em>— note it below.</em></div>
+    <label>Type / Scope of Work</label>
+    <input type="text" id="scopeOfWork" placeholder="e.g. full exterior repaint, interior trim, coating">
+
+    <div class="script-line" id="line-companyOrName"></div>
+    <div class="row2" id="companyFieldWrap" style="display:none;">
+      <div>
+        <label>Company Name</label>
+        <input type="text" id="companyName">
+      </div>
+      <div>
+        <label>Contact Name</label>
+        <input type="text" id="contactName">
+      </div>
+    </div>
+    <div id="resNameWrap">
+      <label>Full Name</label>
+      <input type="text" id="callerName" placeholder="May I get your full name?">
+    </div>
+
+    <div class="row2">
+      <div>
+        <label>Best Phone Number</label>
+        <input type="tel" id="phone" placeholder="(___) ___-____">
+      </div>
+      <div>
+        <label>Best Email</label>
+        <input type="email" id="email" placeholder="name@email.com">
+      </div>
+    </div>
+
+    <label>Property Address</label>
+    <input type="text" id="address" placeholder="Street, city, ZIP">
+
+    <div class="skip-toggle">
+      <input type="checkbox" id="returningClient">
+      <label style="margin:0; text-transform:none; letter-spacing:0; font-weight:500; color:var(--ink);">Returning client (skip referral question)</label>
+    </div>
+
+    <div class="conditional show" id="referralWrap">
+      <div class="script-line">"And if you haven't worked with us before — how did you hear about us?"</div>
+      <label>Lead Source</label>
+      <input type="text" id="referralSource" placeholder="Google, referral, truck signage, etc.">
+    </div>
+
+    <div class="nav-buttons">
+      <span></span>
+      <button class="btn btn-primary" onclick="goToStep(2)">Next →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: SCHEDULING PREFS -->
+  <div class="step" id="step2">
+    <div class="step-head"><div class="step-num">2</div><h3 class="step-title">Follow-Up Preferences</h3></div>
+
+    <div class="script-line">"Any preference on how we should follow up — call, text, or email?"</div>
+    <div class="btn-group" data-group="followupMethod">
+      <button class="opt-btn" data-val="Call">Call</button>
+      <button class="opt-btn" data-val="Text">Text</button>
+      <button class="opt-btn" data-val="Email">Email</button>
+    </div>
+
+    <label style="margin-top:16px;">"Is there a best time of day for us to reach out?"</label>
+    <div class="btn-group" data-group="bestTime">
+      <button class="opt-btn" data-val="Morning">Morning</button>
+      <button class="opt-btn" data-val="Midday">Midday</button>
+      <button class="opt-btn" data-val="Afternoon">Afternoon</button>
+    </div>
+
+    <label>Notes / anything else mentioned on the call</label>
+    <textarea id="freeNotes" placeholder="Anything worth passing along to the team..."></textarea>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goToStep(1)">← Back</button>
+      <button class="btn btn-primary" onclick="goToStep(3)">Next →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: WRAP UP -->
+  <div class="step" id="step3">
+    <div class="step-head"><div class="step-num">3</div><h3 class="step-title">Set Expectation & Close</h3></div>
+
+    <div class="script-line" id="expectationLine"></div>
+
+    <div class="close-card">
+      "Thanks again for calling Chism Brothers Painting — we look forward to helping you. Have a great day!"
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goToStep(2)">← Back</button>
+      <span></span>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast" style="position:fixed; top:16px; left:50%; transform:translateX(-50%) translateY(-40px); background:var(--pine-deep); color:#fff; padding:9px 18px; border-radius:20px; font-size:13.5px; font-weight:600; opacity:0; transition:all .25s ease; z-index:60; pointer-events:none;"></div>
+
+<div id="logOverlay" style="display:none; position:fixed; inset:0; background:rgba(20,24,20,0.55); z-index:50; padding:24px 16px; overflow-y:auto;">
+  <div style="max-width:640px; margin:0 auto; background:var(--paper); border-radius:16px; padding:20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <h2 style="font-family:'Roboto Slab',serif; font-size:19px; color:var(--pine-deep); margin:0;">Call Log</h2>
+      <button onclick="closeLog()" style="background:none; border:none; font-size:22px; line-height:1; cursor:pointer; color:var(--ink-soft);">&times;</button>
+    </div>
+    <div style="display:flex; gap:8px; margin-bottom:14px;">
+      <button class="btn btn-primary" style="flex:1;" onclick="downloadLog()">Download All (.txt)</button>
+      <button class="btn btn-ghost" style="flex:1;" onclick="clearLog()">Clear Log</button>
+    </div>
+    <div id="logList"></div>
+  </div>
+</div>
+
+<div class="summary-bar">
+  <button class="copy-btn" id="copyBtn" onclick="copySummary()">Copy Summary</button>
+  <button class="reset-btn" onclick="resetForm()">Save & New Call</button>
+</div>
+
+<script>
+let projectType = null;
+let currentStep = 0;
+let callStart = Date.now();
+
+const fields = ['scopeOfWork','companyName','contactName','callerName','phone','email','address','referralSource','freeNotes'];
+const groups = {followupMethod:null, bestTime:null};
+
+// clock
+setInterval(()=>{
+  const s = Math.floor((Date.now()-callStart)/1000);
+  const m = String(Math.floor(s/60)).padStart(2,'0');
+  const sec = String(s%60).padStart(2,'0');
+  document.getElementById('clock').textContent = `${m}:${sec}`;
+}, 1000);
+
+// project type selection
+document.querySelectorAll('.swatch').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    projectType = btn.dataset.type;
+    document.querySelectorAll('.swatch').forEach(b=>b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.body.classList.toggle('com', projectType==='commercial');
+
+    const isCommercial = projectType === 'commercial';
+    document.getElementById('companyFieldWrap').style.display = isCommercial ? 'grid' : 'none';
+    document.getElementById('resNameWrap').style.display = isCommercial ? 'none' : 'block';
+    document.getElementById('line-companyOrName').textContent = isCommercial
+      ? '"What\'s the company name, and who\'s the best contact for this project?"'
+      : '"May I get your full name?"';
+
+    goToStep(1);
+    updateDots();
+  });
+});
+
+// returning client toggle
+document.getElementById('returningClient').addEventListener('change', (e)=>{
+  document.getElementById('referralWrap').classList.toggle('show', !e.target.checked);
+});
+
+// button groups
+document.querySelectorAll('.btn-group').forEach(group=>{
+  const key = group.dataset.group;
+  group.querySelectorAll('.opt-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      group.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('picked'));
+      btn.classList.add('picked');
+      groups[key] = btn.dataset.val;
+    });
+  });
+});
+
+function goToStep(n){
+  currentStep = n;
+  [1,2,3].forEach(i=>{
+    document.getElementById('step'+i).classList.toggle('active', i===n);
+  });
+  if(n===3) updateExpectationLine();
+  updateDots();
+  window.scrollTo({top: document.getElementById('step'+n).offsetTop - 20, behavior:'smooth'});
+}
+
+function updateDots(){
+  const dots = document.getElementById('progressDots');
+  const total = 3;
+  const filled = projectType ? currentStep : 0;
+  dots.innerHTML = '';
+  for(let i=1;i<=total;i++){
+    const d = document.createElement('div');
+    d.className = 'dot' + (i<=filled ? ' done' : '');
+    dots.appendChild(d);
+  }
+}
+updateDots();
+
+function updateExpectationLine(){
+  const line = document.getElementById('expectationLine');
+  if(projectType==='commercial'){
+    line.textContent = `"Perfect, thank you! I'll pass this along to our commercial team. During business hours, they review messages quickly and will normally follow up within an hour to discuss next steps and scheduling."`;
+  } else {
+    line.textContent = `"Thanks so much! I'll send this over to our office scheduler now. During business hours, they review notes right away, check the estimator's schedule, and usually reach back out within the hour."`;
+  }
+}
+
+function getVal(id){ return document.getElementById(id).value.trim(); }
+
+function buildSummary(){
+  const type = projectType ? (projectType[0].toUpperCase()+projectType.slice(1)) : 'Not selected';
+  const returning = document.getElementById('returningClient').checked;
+  let lines = [];
+  lines.push(`CHISM BROTHERS PAINTING — CALL SUMMARY`);
+  lines.push(`Project Type: ${type}`);
+  lines.push(`Scope of Work: ${getVal('scopeOfWork') || '—'}`);
+
+  if(projectType==='commercial'){
+    lines.push(`Company: ${getVal('companyName') || '—'}`);
+    lines.push(`Contact Name: ${getVal('contactName') || '—'}`);
+  } else {
+    lines.push(`Caller Name: ${getVal('callerName') || '—'}`);
+  }
+
+  lines.push(`Phone: ${getVal('phone') || '—'}`);
+  lines.push(`Email: ${getVal('email') || '—'}`);
+  lines.push(`Property Address: ${getVal('address') || '—'}`);
+  lines.push(`Returning Client: ${returning ? 'Yes' : 'No'}`);
+  if(!returning){
+    lines.push(`Lead Source: ${getVal('referralSource') || '—'}`);
+  }
+  lines.push(`Follow-up Method: ${groups.followupMethod || '—'}`);
+  lines.push(`Best Time to Reach: ${groups.bestTime || '—'}`);
+  if(getVal('freeNotes')){
+    lines.push(`Notes: ${getVal('freeNotes')}`);
+  }
+  const s = Math.floor((Date.now()-callStart)/1000);
+  const m = String(Math.floor(s/60)).padStart(2,'0');
+  const sec = String(s%60).padStart(2,'0');
+  lines.push(`Call Length: ${m}:${sec}`);
+  return lines.join('\n');
+}
+
+function copySummary(){
+  const text = buildSummary();
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copied ✓';
+    btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent='Copy Summary'; btn.classList.remove('copied'); }, 1800);
+  }).catch(()=>{
+    alert(text);
+  });
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.opacity = '1';
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(()=>{
+    t.style.opacity = '0';
+    t.style.transform = 'translateX(-50%) translateY(-40px)';
+  }, 2200);
+}
+
+function hasMeaningfulData(){
+  return Boolean(getVal('callerName') || getVal('companyName') || getVal('phone') || getVal('email') || getVal('address') || getVal('scopeOfWork'));
+}
+
+async function saveCurrentCallToLog(){
+  if(!hasMeaningfulData()) return false;
+  const key = 'call:' + Date.now();
+  const record = {
+    savedAt: new Date().toISOString(),
+    summary: buildSummary()
+  };
+  try{
+    const result = await window.storage.set(key, JSON.stringify(record), false);
+    return Boolean(result);
+  }catch(err){
+    console.error('Failed to save call log entry:', err);
+    return false;
+  }
+}
+
+async function getAllLogEntries(){
+  try{
+    const listResult = await window.storage.list('call:', false);
+    if(!listResult || !listResult.keys) return [];
+    const entries = [];
+    for(const key of listResult.keys){
+      try{
+        const item = await window.storage.get(key, false);
+        if(item && item.value){
+          const parsed = JSON.parse(item.value);
+          entries.push({ key, ...parsed });
+        }
+      }catch(e){ /* skip unreadable entry */ }
+    }
+    entries.sort((a,b)=> new Date(b.savedAt) - new Date(a.savedAt));
+    return entries;
+  }catch(err){
+    console.error('Failed to list call log:', err);
+    return [];
+  }
+}
+
+async function openLog(){
+  document.getElementById('logOverlay').style.display = 'block';
+  const list = document.getElementById('logList');
+  list.innerHTML = '<p style="color:var(--ink-soft); font-size:13.5px;">Loading...</p>';
+  const entries = await getAllLogEntries();
+  if(entries.length === 0){
+    list.innerHTML = '<p style="color:var(--ink-soft); font-size:13.5px;">No saved calls yet. Finish a call and hit "Save & New Call" to log it here.</p>';
+    return;
+  }
+  list.innerHTML = '';
+  entries.forEach(entry=>{
+    const card = document.createElement('div');
+    card.style.cssText = 'border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:10px; background:var(--paper-raised);';
+    const when = new Date(entry.savedAt).toLocaleString();
+    card.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <span style="font-size:12px; color:var(--ink-soft); font-weight:600;">${when}</span>
+        <div style="display:flex; gap:6px;">
+          <button style="font-size:12px; border:1px solid var(--line); background:#fff; border-radius:6px; padding:3px 8px; cursor:pointer;" onclick="copyLogEntry('${entry.key}')">Copy</button>
+          <button style="font-size:12px; border:1px solid var(--line); background:#fff; color:var(--clay); border-radius:6px; padding:3px 8px; cursor:pointer;" onclick="deleteLogEntry('${entry.key}')">Delete</button>
+        </div>
+      </div>
+      <pre style="white-space:pre-wrap; font-family:'JetBrains Mono',monospace; font-size:12px; margin:0; color:var(--ink);">${entry.summary}</pre>
+    `;
+    list.appendChild(card);
+  });
+}
+
+function closeLog(){
+  document.getElementById('logOverlay').style.display = 'none';
+}
+
+async function copyLogEntry(key){
+  try{
+    const item = await window.storage.get(key, false);
+    if(item && item.value){
+      const parsed = JSON.parse(item.value);
+      await navigator.clipboard.writeText(parsed.summary);
+      showToast('Copied ✓');
+    }
+  }catch(err){
+    console.error('Copy failed:', err);
+  }
+}
+
+async function deleteLogEntry(key){
+  try{
+    await window.storage.delete(key, false);
+    openLog();
+  }catch(err){
+    console.error('Delete failed:', err);
+  }
+}
+
+async function downloadLog(){
+  const entries = await getAllLogEntries();
+  if(entries.length === 0){
+    showToast('Log is empty');
+    return;
+  }
+  const text = entries.map(e=> `${new Date(e.savedAt).toLocaleString()}\n${e.summary}`).join('\n\n' + '-'.repeat(40) + '\n\n');
+  const blob = new Blob([text], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `chism-brothers-call-log-${new Date().toISOString().slice(0,10)}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+async function clearLog(){
+  if(!window.__confirmClear){
+    window.__confirmClear = true;
+    showToast('Tap "Clear Log" again to confirm');
+    setTimeout(()=>{ window.__confirmClear = false; }, 3000);
+    return;
+  }
+  window.__confirmClear = false;
+  const entries = await getAllLogEntries();
+  for(const entry of entries){
+    try{ await window.storage.delete(entry.key, false); }catch(e){}
+  }
+  openLog();
+}
+
+async function resetForm(){
+  const saved = await saveCurrentCallToLog();
+  fields.forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('returningClient').checked = false;
+  document.getElementById('referralWrap').classList.add('show');
+  document.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('picked'));
+  groups.followupMethod = null;
+  groups.bestTime = null;
+  document.querySelectorAll('.swatch').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('companyFieldWrap').style.display = 'none';
+  document.getElementById('resNameWrap').style.display = 'block';
+  projectType = null;
+  document.body.classList.remove('com');
+  currentStep = 0;
+  [1,2,3].forEach(i=> document.getElementById('step'+i).classList.remove('active'));
+  callStart = Date.now();
+  updateDots();
+  window.scrollTo({top:0, behavior:'smooth'});
+  showToast(saved ? 'Call saved to log ✓ — ready for the next one' : 'Cleared — ready for the next call');
+}
+</script>
+
+</body>
+</html>
