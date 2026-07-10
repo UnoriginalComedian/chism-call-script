@@ -301,15 +301,64 @@
   .dot{height:5px; flex:1; border-radius:3px; background:var(--line);}
   .dot.done{background:var(--pine);}
 
+  .start-screen{
+    min-height:70vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:40px 16px;
+  }
+  .start-screen .brand-eyebrow{margin-bottom:8px;}
+  .start-screen h1{font-size:30px; margin-bottom:10px;}
+  .start-screen p.sub{color:var(--ink-soft); font-size:14.5px; margin:0 0 28px; max-width:340px;}
+  .start-call-btn{
+    background:var(--pine);
+    color:#fff;
+    border:none;
+    border-radius:12px;
+    padding:18px 40px;
+    font-size:17px;
+    font-weight:700;
+    font-family:'Inter',sans-serif;
+    cursor:pointer;
+    box-shadow:0 4px 14px rgba(30,74,63,0.25);
+  }
+  .start-call-btn:active{transform:scale(.98);}
+  .start-log-link{
+    margin-top:18px;
+    background:none;
+    border:none;
+    color:var(--ink-soft);
+    font-size:12.5px;
+    text-decoration:underline;
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+  }
+
+  body.pre-call #callFlow{display:none;}
+  body.pre-call .summary-bar{display:none;}
+  body:not(.pre-call) .start-screen{display:none;}
+
   @media (max-width:480px){
     h1{font-size:21px;}
     .row2{grid-template-columns:1fr;}
   }
 </style>
 </head>
-<body>
+<body class="pre-call">
 <div class="wrap">
 
+  <div class="start-screen" id="startScreen">
+    <p class="brand-eyebrow">Chism Brothers Painting</p>
+    <h1>Answering Service Script</h1>
+    <p class="sub">Tap Start when you pick up — this begins the call timer and walks you through the greeting.</p>
+    <button class="start-call-btn" id="startCallBtn">Start Call</button>
+    <button class="start-log-link" onclick="openLog()">📋 View Call Log</button>
+  </div>
+
+  <div id="callFlow">
   <header>
     <div>
       <p class="brand-eyebrow">Chism Brothers Painting</p>
@@ -443,6 +492,8 @@
     </div>
   </div>
 
+  </div><!-- /callFlow -->
+
 </div>
 
 <div id="toast" style="position:fixed; top:16px; left:50%; transform:translateX(-50%) translateY(-40px); background:var(--pine-deep); color:#fff; padding:9px 18px; border-radius:20px; font-size:13.5px; font-weight:600; opacity:0; transition:all .25s ease; z-index:60; pointer-events:none;"></div>
@@ -481,6 +532,13 @@ setInterval(()=>{
   const sec = String(s%60).padStart(2,'0');
   document.getElementById('clock').textContent = `${m}:${sec}`;
 }, 1000);
+
+// start call
+document.getElementById('startCallBtn').addEventListener('click', ()=>{
+  document.body.classList.remove('pre-call');
+  callStart = Date.now();
+  document.getElementById('agentName').focus();
+});
 
 // project type selection
 document.querySelectorAll('.swatch').forEach(btn=>{
@@ -614,6 +672,26 @@ function hasMeaningfulData(){
   return Boolean(getVal('callerName') || getVal('companyName') || getVal('phone') || getVal('email') || getVal('address') || getVal('scopeOfWork'));
 }
 
+function storageSet(key, value){
+  try{ localStorage.setItem(key, value); return true; }
+  catch(err){ console.error('localStorage.setItem failed:', err); return false; }
+}
+function storageGet(key){
+  const value = localStorage.getItem(key);
+  return value === null ? null : { value };
+}
+function storageList(prefix){
+  const keys = [];
+  for(let i=0;i<localStorage.length;i++){
+    const k = localStorage.key(i);
+    if(k && k.startsWith(prefix)) keys.push(k);
+  }
+  return { keys };
+}
+function storageDelete(key){
+  localStorage.removeItem(key);
+}
+
 async function saveCurrentCallToLog(){
   if(!hasMeaningfulData()) return false;
   const key = 'call:' + Date.now();
@@ -622,8 +700,7 @@ async function saveCurrentCallToLog(){
     summary: buildSummary()
   };
   try{
-    const result = await window.storage.set(key, JSON.stringify(record), false);
-    return Boolean(result);
+    return storageSet(key, JSON.stringify(record));
   }catch(err){
     console.error('Failed to save call log entry:', err);
     return false;
@@ -632,12 +709,12 @@ async function saveCurrentCallToLog(){
 
 async function getAllLogEntries(){
   try{
-    const listResult = await window.storage.list('call:', false);
+    const listResult = storageList('call:');
     if(!listResult || !listResult.keys) return [];
     const entries = [];
     for(const key of listResult.keys){
       try{
-        const item = await window.storage.get(key, false);
+        const item = storageGet(key);
         if(item && item.value){
           const parsed = JSON.parse(item.value);
           entries.push({ key, ...parsed });
@@ -686,7 +763,7 @@ function closeLog(){
 
 async function copyLogEntry(key){
   try{
-    const item = await window.storage.get(key, false);
+    const item = storageGet(key);
     if(item && item.value){
       const parsed = JSON.parse(item.value);
       await navigator.clipboard.writeText(parsed.summary);
@@ -699,7 +776,7 @@ async function copyLogEntry(key){
 
 async function deleteLogEntry(key){
   try{
-    await window.storage.delete(key, false);
+    storageDelete(key);
     openLog();
   }catch(err){
     console.error('Delete failed:', err);
@@ -734,7 +811,7 @@ async function clearLog(){
   window.__confirmClear = false;
   const entries = await getAllLogEntries();
   for(const entry of entries){
-    try{ await window.storage.delete(entry.key, false); }catch(e){}
+    try{ storageDelete(entry.key); }catch(e){}
   }
   openLog();
 }
@@ -756,6 +833,7 @@ async function resetForm(){
   [1,2,3].forEach(i=> document.getElementById('step'+i).classList.remove('active'));
   callStart = Date.now();
   updateDots();
+  document.body.classList.add('pre-call');
   window.scrollTo({top:0, behavior:'smooth'});
   showToast(saved ? 'Call saved to log ✓ — ready for the next one' : 'Cleared — ready for the next call');
 }
