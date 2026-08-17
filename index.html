@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Internal answering-service call script for Chism Brothers Painting.">
+<meta name="theme-color" content="#3B3E43">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%233FAE81'/%3E%3Ctext x='16' y='22' font-family='Georgia,serif' font-size='16' font-weight='bold' text-anchor='middle' fill='%23fff'%3ECB%3C/text%3E%3C/svg%3E">
 <title>Chism Brothers Painting — Call Script</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap');
@@ -179,6 +183,13 @@
     margin:0;
   }
 
+  .step-hint{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin:-8px 0 14px;
+    font-style:italic;
+  }
+
   .script-line{
     background:var(--clay-soft);
     border-left:3px solid var(--clay);
@@ -303,6 +314,83 @@
   .reset-btn{background:transparent; color:#fff; border:1.5px solid rgba(255,255,255,0.4) !important;}
   .copy-btn.copied{background:var(--pine); color:#fff;}
 
+  /* ---- Fast Notes scratchpad ---- */
+  .notes-fab{
+    position:fixed;
+    right:16px;
+    bottom:84px;
+    z-index:45;
+    background:var(--gold);
+    color:#2A2100;
+    border:none;
+    border-radius:28px;
+    padding:14px 20px;
+    font-size:15px;
+    font-weight:700;
+    font-family:'Inter',sans-serif;
+    cursor:pointer;
+    box-shadow:0 4px 16px rgba(0,0,0,0.35);
+    display:flex;
+    align-items:center;
+    gap:7px;
+  }
+  .notes-fab:active{transform:scale(.97);}
+  .notes-fab .dot-badge{
+    width:8px; height:8px; border-radius:50%;
+    background:var(--pine); display:none;
+  }
+  .notes-fab.has-notes .dot-badge{display:block;}
+
+  .notes-overlay{
+    display:none;
+    position:fixed; inset:0;
+    background:var(--paper);
+    z-index:70;
+    flex-direction:column;
+    padding:16px 16px 12px;
+  }
+  .notes-overlay.open{display:flex;}
+  .notes-head{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:10px;
+  }
+  .notes-head h2{
+    font-family:'Roboto Slab',serif;
+    font-size:19px; color:var(--heading); margin:0;
+  }
+  #scratchPad{
+    flex:1;
+    width:100%;
+    resize:none;
+    font-size:16px;
+    line-height:1.5;
+    padding:14px;
+    border-radius:10px;
+    border:1.5px solid var(--line);
+    background:var(--paper-recessed);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    min-height:0;
+  }
+  .notes-actions{
+    display:flex; gap:9px; margin-top:11px;
+  }
+  .notes-actions button{flex:1;}
+  .notes-hint{
+    font-size:12px; color:var(--ink-soft); margin:8px 0 0; text-align:center;
+  }
+  .chip-row{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:9px;}
+  .chip-row button{
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    color:var(--ink-soft);
+    border-radius:14px;
+    padding:5px 11px;
+    font-size:12px;
+    font-family:'Inter',sans-serif;
+    cursor:pointer;
+  }
+
   .progress-dots{display:flex; gap:5px; margin:2px 0 18px;}
   .dot{height:5px; flex:1; border-radius:3px; background:var(--line);}
   .dot.done{background:var(--pine);}
@@ -381,7 +469,7 @@
   <div class="greeting-card">
     <span class="tag">Greeting — every call</span>
     <span class="say">"Good morning/afternoon! Thank you for calling Chism Brothers Painting — this is
-      <input type="text" id="agentName" placeholder="your name"> , how can I assist you today?"</span>
+      <input type="text" id="agentName" placeholder="your name" aria-label="Your name (remembered between calls)"> , how can I assist you today?"</span>
   </div>
 
   <div class="progress-dots" id="progressDots"></div>
@@ -400,45 +488,101 @@
     </button>
   </div>
 
-  <!-- STEP 1: CALLER INFO -->
+  <!-- STEP 1: WHO & WHAT -->
   <div class="step" id="step1">
-    <div class="step-head"><div class="step-num">1</div><h3 class="step-title">Caller Info</h3></div>
-
-    <div class="script-line">"What type of painting project did you have in mind?" <em>— note it below.</em></div>
-    <label>Project Category</label>
-    <select id="scopeOfWork">
-      <option value="" disabled selected>Select project category…</option>
-    </select>
+    <div class="step-head"><div class="step-num">1</div><h3 class="step-title">Who & What</h3></div>
 
     <div class="script-line" id="line-companyOrName"></div>
     <div class="row2" id="companyFieldWrap" style="display:none;">
       <div>
         <label>Company Name</label>
-        <input type="text" id="companyName">
+        <input type="text" id="companyName" autocomplete="organization">
       </div>
       <div>
         <label>Contact Name</label>
-        <input type="text" id="contactName">
+        <input type="text" id="contactName" autocomplete="name">
       </div>
     </div>
     <div id="resNameWrap">
       <label>Full Name</label>
-      <input type="text" id="callerName" placeholder="May I get your full name?">
+      <input type="text" id="callerName" placeholder="May I get your full name?" autocomplete="name">
     </div>
+
+    <div class="script-line">"And what type of painting project did you have in mind?"</div>
+    <label>Project Category</label>
+    <select id="scopeOfWork">
+      <option value="" disabled selected>Select project category…</option>
+    </select>
+
+    <div class="nav-buttons">
+      <span></span>
+      <button class="btn btn-primary" onclick="goToStep(2)">Next →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: THE PROJECT (discovery) -->
+  <div class="step" id="step2">
+    <div class="step-head"><div class="step-num">2</div><h3 class="step-title">Their Project</h3></div>
+    <p class="step-hint">Let them talk here — this is where the job gets sold.</p>
+
+    <div class="script-line">"What's prompting the project — is this a refresh, getting ready to sell, damage repair, or something else?"</div>
+    <label>Why Are You Painting?</label>
+    <input type="text" id="whyPainting" placeholder="e.g. selling the home, general refresh, storm/water damage">
+
+    <div class="script-line">"Which surfaces are you looking to have painted?"</div>
+    <label>Surfaces Needing Paint</label>
+    <input type="text" id="surfacesNeeded" placeholder="e.g. exterior siding, interior walls, trim, cabinets, deck">
+
+    <div class="script-line">"When was the last time this area was painted?"</div>
+    <label>Last Painted</label>
+    <input type="text" id="lastPainted" placeholder="e.g. about 5 years ago, never, not sure">
+
+    <div class="script-line">"Have you picked out colors yet, or would it help to have someone walk you through options?"</div>
+    <label>Colors Selected?</label>
+    <div class="btn-group" data-group="colorsSelected">
+      <button class="opt-btn" data-val="Yes">Yes</button>
+      <button class="opt-btn" data-val="No">No</button>
+      <button class="opt-btn" data-val="Need help choosing">Need help choosing</button>
+    </div>
+
+    <div class="script-line" style="margin-top:16px;">"How soon are you looking to get started?"</div>
+    <label>Timeframe</label>
+    <input type="text" id="startTimeframe" placeholder="e.g. within a month, this spring, no rush">
+
+    <div class="skip-toggle">
+      <input type="checkbox" id="asapToggle">
+      <label style="margin:0; text-transform:none; letter-spacing:0; font-weight:500; color:var(--ink);">ASAP — needs to start right away</label>
+    </div>
+    <div class="conditional" id="asapDeadlineWrap">
+      <label>Target Deadline</label>
+      <input type="text" id="asapDeadline" placeholder="e.g. must be done by 9/15, before a listing goes live">
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goToStep(1)">← Back</button>
+      <button class="btn btn-primary" onclick="goToStep(3)">Next →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: CONTACT & PROPERTY -->
+  <div class="step" id="step3">
+    <div class="step-head"><div class="step-num">3</div><h3 class="step-title">Contact & Property</h3></div>
+
+    <div class="script-line">"Perfect. Let me grab your details so the estimator can get out to you."</div>
 
     <div class="row2">
       <div>
         <label>Best Phone Number</label>
-        <input type="tel" id="phone" placeholder="(___) ___-____">
+        <input type="tel" id="phone" placeholder="(___) ___-____" autocomplete="tel" inputmode="tel">
       </div>
       <div>
         <label>Best Email</label>
-        <input type="email" id="email" placeholder="name@email.com">
+        <input type="email" id="email" placeholder="name@email.com" autocomplete="email" inputmode="email">
       </div>
     </div>
 
     <label>Property Address</label>
-    <input type="text" id="address" placeholder="Street, city, ZIP">
+    <input type="text" id="address" placeholder="Street, city, ZIP" autocomplete="street-address">
 
     <div class="skip-toggle">
       <input type="checkbox" id="returningClient">
@@ -474,45 +618,14 @@
     </div>
 
     <div class="nav-buttons">
-      <span></span>
-      <button class="btn btn-primary" onclick="tryLeaveStep1()">Next →</button>
+      <button class="btn btn-ghost" onclick="goToStep(2)">← Back</button>
+      <button class="btn btn-primary" onclick="tryLeaveContact()">Next →</button>
     </div>
   </div>
 
-  <!-- STEP 2: PROJECT DETAILS -->
-  <div class="step" id="step2">
-    <div class="step-head"><div class="step-num">2</div><h3 class="step-title">Project Details</h3></div>
-
-    <div class="script-line">"What's prompting the project — is this a refresh, getting ready to sell, damage repair, or something else?"</div>
-    <label>Why Are You Painting?</label>
-    <input type="text" id="whyPainting" placeholder="e.g. selling the home, general refresh, storm/water damage">
-
-    <div class="script-line">"Which surfaces are you looking to have painted?"</div>
-    <label>Surfaces Needing Paint</label>
-    <input type="text" id="surfacesNeeded" placeholder="e.g. exterior siding, interior walls, trim, cabinets, deck">
-
-    <div class="script-line">"When was the last time this area was painted?"</div>
-    <label>Last Painted</label>
-    <input type="text" id="lastPainted" placeholder="e.g. about 5 years ago, never, not sure">
-
-    <label>Have You Selected Colors for Your Project?</label>
-    <div class="btn-group" data-group="colorsSelected">
-      <button class="opt-btn" data-val="Yes">Yes</button>
-      <button class="opt-btn" data-val="No">No</button>
-      <button class="opt-btn" data-val="Need help choosing">Need help choosing</button>
-    </div>
-
-    <label style="margin-top:16px;">"How soon are you looking to get started?"</label>
-    <input type="text" id="startTimeframe" placeholder="e.g. within a month, this spring, no rush">
-
-    <div class="skip-toggle">
-      <input type="checkbox" id="asapToggle">
-      <label style="margin:0; text-transform:none; letter-spacing:0; font-weight:500; color:var(--ink);">ASAP — needs to start right away</label>
-    </div>
-    <div class="conditional" id="asapDeadlineWrap">
-      <label>Target Deadline</label>
-      <input type="text" id="asapDeadline" placeholder="e.g. must be done by 9/15, before a listing goes live">
-    </div>
+  <!-- STEP 4: BUDGET & SCHEDULING -->
+  <div class="step" id="step4">
+    <div class="step-head"><div class="step-num">4</div><h3 class="step-title">Budget & Scheduling</h3></div>
 
     <div class="script-line">"Do you have a budget range in mind? That way I can make sure we're pointing you toward options that actually make sense for you."</div>
     <label>Budget Range</label>
@@ -524,36 +637,17 @@
       <button class="opt-btn" data-val="Not sure yet">Not sure yet</button>
     </div>
 
-    <div class="nav-buttons">
-      <button class="btn btn-ghost" onclick="goToStep(1)">← Back</button>
-      <button class="btn btn-primary" onclick="goToStep(3)">Next →</button>
-    </div>
-  </div>
-
-  <!-- STEP 3: SCHEDULE ESTIMATE -->
-  <div class="step" id="step3">
-    <div class="step-head"><div class="step-num">3</div><h3 class="step-title">Schedule Your Estimate</h3></div>
-
-    <div class="script-line" id="estimatorLine"></div>
-
-    <div class="nav-buttons">
-      <button class="btn btn-ghost" onclick="goToStep(2)">← Back</button>
-      <button class="btn btn-primary" onclick="goToStep(4)">Next →</button>
-    </div>
-  </div>
-
-  <!-- STEP 4: FOLLOW-UP PREFS -->
-  <div class="step" id="step4">
-    <div class="step-head"><div class="step-num">4</div><h3 class="step-title">Follow-Up Preferences</h3></div>
+    <div class="script-line" style="margin-top:16px;" id="estimatorLine"></div>
 
     <div class="script-line">"Any preference on how we should follow up — call, text, or email?"</div>
+    <label>Follow-Up Method</label>
     <div class="btn-group" data-group="followupMethod">
       <button class="opt-btn" data-val="Call">Call</button>
       <button class="opt-btn" data-val="Text">Text</button>
       <button class="opt-btn" data-val="Email">Email</button>
     </div>
 
-    <label style="margin-top:16px;">"Is there a best time of day for us to reach out?"</label>
+    <label style="margin-top:16px;">Best Time to Reach Them</label>
     <div class="btn-group" data-group="bestTime">
       <button class="opt-btn" data-val="Morning">Morning</button>
       <button class="opt-btn" data-val="Midday">Midday</button>
@@ -595,13 +689,52 @@
   <div style="max-width:640px; margin:0 auto; background:var(--paper); border-radius:16px; padding:20px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
       <h2 style="font-family:'Roboto Slab',serif; font-size:19px; color:var(--heading); margin:0;">Call Log</h2>
-      <button onclick="closeLog()" style="background:none; border:none; font-size:22px; line-height:1; cursor:pointer; color:var(--ink-soft);">&times;</button>
+      <button onclick="closeLog()" aria-label="Close call log" style="background:none; border:none; font-size:22px; line-height:1; cursor:pointer; color:var(--ink-soft);">&times;</button>
     </div>
     <div style="display:flex; gap:8px; margin-bottom:14px;">
       <button class="btn btn-primary" style="flex:1;" onclick="downloadLog()">Download All (.txt)</button>
       <button class="btn btn-ghost" style="flex:1;" onclick="clearLog()">Clear Log</button>
     </div>
     <div id="logList"></div>
+  </div>
+</div>
+
+<button class="notes-fab" id="notesFab" onclick="openNotes()" aria-label="Open fast notes">
+  <span class="dot-badge"></span>✎ Notes
+</button>
+
+<div class="notes-overlay" id="notesOverlay">
+  <div class="notes-head">
+    <h2>Fast Notes</h2>
+    <button onclick="closeNotes()" aria-label="Close notes" style="background:none; border:none; font-size:26px; line-height:1; cursor:pointer; color:var(--ink-soft);">&times;</button>
+  </div>
+  <div class="chip-row">
+    <button onclick="insertSnippet('Name: ')">Name</button>
+    <button onclick="insertSnippet('Phone: ')">Phone</button>
+    <button onclick="insertSnippet('Email: ')">Email</button>
+    <button onclick="insertSnippet('Address: ')">Address</button>
+    <button onclick="insertSnippet('Budget: ')">Budget</button>
+    <button onclick="insertSnippet('Timeline: ')">Timeline</button>
+  </div>
+  <textarea id="scratchPad" placeholder="Type anything, any order — this is your safety net.
+
+jane doe 555-123-4567
+jane@email.com
+1420 Sunset Ave, San Diego
+exterior siding + trim, selling in fall
+painted maybe 8 yrs ago, no colors picked
+budget around 12k, asap before listing"></textarea>
+  <div class="notes-actions">
+    <button class="btn btn-primary" onclick="sortNotesIntoFields()">✨ Sort into fields</button>
+    <button class="btn btn-ghost" onclick="closeNotes()">Done</button>
+  </div>
+  <p class="notes-hint">Notes always land in the summary, sorted or not. <a href="#" onclick="toggleAiSettings(event)" style="color:var(--ink-soft);">AI setup</a></p>
+  <div id="aiSettings" style="display:none; margin-top:10px; border-top:1px solid var(--line); padding-top:10px;">
+    <label>Local AI endpoint (optional — e.g. Ollama)</label>
+    <input type="text" id="aiEndpoint" placeholder="http://localhost:11434">
+    <label>Model</label>
+    <input type="text" id="aiModel" placeholder="llama3.2">
+    <p class="notes-hint" style="text-align:left; margin-top:8px;">Leave blank to use the built-in parser (no setup, works offline). If set, Sort uses your local model and falls back automatically if it can't reach it.</p>
   </div>
 </div>
 
@@ -663,11 +796,33 @@ setInterval(()=>{
   document.getElementById('clock').textContent = `${m}:${sec}`;
 }, 1000);
 
+// agent name — remembered between calls (same person answers all shift),
+// so it survives "Save & New Call" and page reloads.
+const agentEl = document.getElementById('agentName');
+try{
+  const savedAgent = localStorage.getItem('agentName');
+  if(savedAgent) agentEl.value = savedAgent;
+}catch(e){ /* storage unavailable — field just starts blank */ }
+agentEl.addEventListener('input', ()=>{
+  try{ localStorage.setItem('agentName', agentEl.value.trim()); }catch(e){}
+});
+
 // start call
 document.getElementById('startCallBtn').addEventListener('click', ()=>{
   document.body.classList.remove('pre-call');
   callStart = Date.now();
-  document.getElementById('agentName').focus();
+  // don't steal focus from a name that's already remembered
+  if(!agentEl.value.trim()) agentEl.focus();
+});
+
+// phone auto-formatting — (555) 123-4567 as they type
+document.getElementById('phone').addEventListener('input', (e)=>{
+  const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+  let out = digits;
+  if(digits.length > 6)      out = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
+  else if(digits.length > 3) out = `(${digits.slice(0,3)}) ${digits.slice(3)}`;
+  else if(digits.length > 0) out = `(${digits}`;
+  e.target.value = out;
 });
 
 // project type selection
@@ -718,7 +873,7 @@ document.querySelectorAll('.btn-group').forEach(group=>{
 });
 
 let phoneWarned = false;
-function tryLeaveStep1(){
+function tryLeaveContact(){
   const phoneEl = document.getElementById('phone');
   if(!getVal('phone') && !phoneWarned){
     phoneWarned = true;
@@ -729,7 +884,7 @@ function tryLeaveStep1(){
   }
   phoneWarned = false;
   phoneEl.classList.remove('field-warn');
-  goToStep(2);
+  goToStep(4);
 }
 document.getElementById('phone').addEventListener('input', ()=>{
   phoneWarned = false;
@@ -770,11 +925,42 @@ function updateExpectationLine(){
 
 function getVal(id){ return document.getElementById(id).value.trim(); }
 
+// Saved summaries contain customer-typed text — escape before injecting into the log view.
+function escapeHtml(str){
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// Warn before losing an in-progress call to a stray refresh or tab close.
+window.addEventListener('beforeunload', (e)=>{
+  if(!document.body.classList.contains('pre-call') && hasMeaningfulData()){
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+
 function buildSummary(){
   const type = projectType ? (projectType[0].toUpperCase()+projectType.slice(1)) : 'Not selected';
   const returning = document.getElementById('returningClient').checked;
   let lines = [];
   lines.push(`CHISM BROTHERS PAINTING — CALL SUMMARY`);
+  lines.push(`Taken by: ${getVal('agentName') || '—'}  |  ${new Date().toLocaleString()}`);
+  lines.push(``);
+
+  // WHO
+  if(projectType==='commercial'){
+    lines.push(`Company: ${getVal('companyName') || '—'}`);
+    lines.push(`Contact Name: ${getVal('contactName') || '—'}`);
+  } else {
+    lines.push(`Caller Name: ${getVal('callerName') || '—'}`);
+  }
+  lines.push(`Phone: ${getVal('phone') || '—'}`);
+  lines.push(`Email: ${getVal('email') || '—'}`);
+  lines.push(`Property Address: ${getVal('address') || '—'}`);
+  lines.push(``);
+
+  // PROJECT
   lines.push(`Project Type: ${type}`);
   lines.push(`Project Category: ${getVal('scopeOfWork') || '—'}`);
   lines.push(`Why Painting: ${getVal('whyPainting') || '—'}`);
@@ -788,27 +974,19 @@ function buildSummary(){
     lines.push(`Target Deadline: ${getVal('asapDeadline') || '—'}`);
   }
   lines.push(`Budget Range: ${groups.budgetRange || '—'}`);
+  lines.push(``);
 
-  if(projectType==='commercial'){
-    lines.push(`Company: ${getVal('companyName') || '—'}`);
-    lines.push(`Contact Name: ${getVal('contactName') || '—'}`);
-  } else {
-    lines.push(`Caller Name: ${getVal('callerName') || '—'}`);
-  }
-
-  lines.push(`Phone: ${getVal('phone') || '—'}`);
-  lines.push(`Email: ${getVal('email') || '—'}`);
-  lines.push(`Property Address: ${getVal('address') || '—'}`);
-  lines.push(`Returning Client: ${returning ? 'Yes' : 'No'}`);
-  if(!returning){
-    lines.push(`Lead Source: ${getVal('referralSource') || '—'}`);
-  }
+  // NEXT STEPS
   if(projectType){
     const estimator = projectType==='commercial' ? ESTIMATORS.commercial : ESTIMATORS.residential;
     lines.push(`Estimator: ${estimator.name}`);
   }
   lines.push(`Follow-up Method: ${groups.followupMethod || '—'}`);
   lines.push(`Best Time to Reach: ${groups.bestTime || '—'}`);
+  lines.push(`Returning Client: ${returning ? 'Yes' : 'No'}`);
+  if(!returning){
+    lines.push(`Lead Source: ${getVal('referralSource') || '—'}`);
+  }
   if(getVal('freeNotes')){
     lines.push(`Notes: ${getVal('freeNotes')}`);
   }
@@ -870,7 +1048,8 @@ function showToast(msg){
 }
 
 function hasMeaningfulData(){
-  return Boolean(getVal('callerName') || getVal('companyName') || getVal('phone') || getVal('email') || getVal('address') || getVal('scopeOfWork'));
+  return Boolean(getVal('callerName') || getVal('companyName') || getVal('phone') || getVal('email')
+    || getVal('address') || getVal('scopeOfWork') || getVal('freeNotes'));
 }
 
 function storageSet(key, value){
@@ -952,7 +1131,7 @@ async function openLog(){
           <button style="font-size:12px; border:1px solid var(--line); background:var(--paper-raised); color:var(--clay); border-radius:6px; padding:3px 8px; cursor:pointer;" onclick="deleteLogEntry('${entry.key}')">Delete</button>
         </div>
       </div>
-      <pre style="white-space:pre-wrap; font-family:'JetBrains Mono',monospace; font-size:12px; margin:0; color:var(--ink);">${entry.summary}</pre>
+      <pre style="white-space:pre-wrap; font-family:'JetBrains Mono',monospace; font-size:12px; margin:0; color:var(--ink);">${escapeHtml(entry.summary)}</pre>
     `;
     list.appendChild(card);
   });
@@ -1022,6 +1201,8 @@ async function resetForm(){
   fields.forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
   phoneWarned = false;
   document.getElementById('phone').classList.remove('field-warn');
+  document.getElementById('scratchPad').value = '';
+  document.getElementById('notesFab').classList.remove('has-notes');
   document.getElementById('returningClient').checked = false;
   document.getElementById('referralWrap').classList.add('show');
   document.getElementById('asapToggle').checked = false;
@@ -1044,6 +1225,294 @@ async function resetForm(){
   document.body.classList.add('pre-call');
   window.scrollTo({top:0, behavior:'smooth'});
   showToast(saved ? 'Call saved to log ✓ — ready for the next one' : 'Cleared — ready for the next call');
+}
+
+/* ============================================================
+   FAST NOTES — dump first, sort later.
+   The caller never follows the script order, so this is always
+   one tap away from any step. Whatever is typed here lands in
+   the summary whether or not it ever gets parsed.
+   ============================================================ */
+
+const scratchEl = document.getElementById('scratchPad');
+const freeNotesEl = document.getElementById('freeNotes');
+const notesFab = document.getElementById('notesFab');
+
+// Scratchpad and the step-4 Notes box are the same data, two views of it.
+scratchEl.addEventListener('input', ()=>{ freeNotesEl.value = scratchEl.value; markNotes(); });
+freeNotesEl.addEventListener('input', ()=>{ scratchEl.value = freeNotesEl.value; markNotes(); });
+
+function markNotes(){
+  notesFab.classList.toggle('has-notes', scratchEl.value.trim().length > 0);
+}
+
+function openNotes(){
+  document.getElementById('notesOverlay').classList.add('open');
+  scratchEl.focus();
+  const len = scratchEl.value.length;
+  scratchEl.setSelectionRange(len, len);
+}
+function closeNotes(){
+  document.getElementById('notesOverlay').classList.remove('open');
+}
+function insertSnippet(text){
+  const cur = scratchEl.value;
+  const needsBreak = cur.length && !cur.endsWith('\n');
+  scratchEl.value = cur + (needsBreak ? '\n' : '') + text;
+  scratchEl.focus();
+  const len = scratchEl.value.length;
+  scratchEl.setSelectionRange(len, len);
+  freeNotesEl.value = scratchEl.value;
+  markNotes();
+}
+function toggleAiSettings(e){
+  e.preventDefault();
+  const box = document.getElementById('aiSettings');
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+}
+
+// Remember AI settings between sessions
+['aiEndpoint','aiModel'].forEach(id=>{
+  const el = document.getElementById(id);
+  try{ el.value = localStorage.getItem(id) || ''; }catch(e){}
+  el.addEventListener('input', ()=>{ try{ localStorage.setItem(id, el.value.trim()); }catch(e){} });
+});
+
+// --- helpers ---
+function setIfEmpty(id, val){
+  if(!val) return false;
+  const el = document.getElementById(id);
+  if(!el || el.value.trim()) return false;   // never overwrite what the agent typed
+  el.value = val;
+  return true;
+}
+function setGroupIfEmpty(key, val){
+  if(!val || groups[key]) return false;
+  const btn = document.querySelector(`.btn-group[data-group="${key}"] .opt-btn[data-val="${val}"]`);
+  if(!btn) return false;
+  btn.click();
+  return true;
+}
+function setSelectIfEmpty(id, val){
+  if(!val) return false;
+  const el = document.getElementById(id);
+  if(!el || el.value) return false;
+  const match = Array.from(el.options).find(o => o.value === val);
+  if(!match) return false;
+  el.value = val;
+  return true;
+}
+
+// --- the built-in parser: no install, offline, instant ---
+function parseNotes(text){
+  const out = {};
+  const lower = text.toLowerCase();
+
+  // Explicitly labeled lines win over guessing.
+  const labeled = {};
+  text.split('\n').forEach(line=>{
+    const m = line.match(/^\s*(name|phone|cell|email|address|budget|timeline|when|why|surfaces?|colou?rs?|company|contact)\s*[:\-]\s*(.+)$/i);
+    if(m) labeled[m[1].toLowerCase()] = m[2].trim();
+  });
+
+  // Phone
+  const phone = labeled.phone || labeled.cell ||
+    (text.match(/(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/) || [])[0];
+  if(phone){
+    const d = phone.replace(/\D/g,'').slice(-10);
+    if(d.length === 10) out.phone = `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`;
+  }
+
+  // Email
+  out.email = labeled.email || (text.match(/[\w.+-]+@[\w-]+\.[\w.]+/) || [])[0];
+
+  // Address — labeled, else a line that looks like a street address
+  out.address = labeled.address ||
+    (text.match(/\b\d+[\w-]*\s+[\w.'-]+(?:\s+[\w.'-]+)*\s+(?:st|street|ave|avenue|rd|road|dr|drive|ln|lane|blvd|boulevard|way|ct|court|pl|place|cir|circle|ter|terrace|hwy|highway|pkwy|parkway)\b\.?[^\n]*/i) || [])[0];
+
+  // Name — labeled, else first line of 2-3 capitalized words that isn't something else
+  if(labeled.name){
+    out.callerName = labeled.name;
+  } else {
+    for(const raw of text.split('\n')){
+      // A name is often jotted on the same line as the phone/email — strip those
+      // out first, then see if what's left looks like a person's name.
+      const line = raw
+        .replace(/[\w.+-]+@[\w-]+\.[\w.]+/g, ' ')
+        .replace(/(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/g, ' ')
+        .replace(/[,|/]+/g, ' ')
+        .trim();
+      if(!line || /\d/.test(line)) continue;
+      if(/^(name|phone|cell|email|address|budget|timeline|when|why|surfaces?|colou?rs?)\b/i.test(line)) continue;
+      if(/\b(interior|exterior|cabinet|siding|trim|paint|painted|budget|asap|wants?|needs?|selling|house|home|google|referral)\b/i.test(line)) continue;
+      if(/^[A-Za-z][\w'-]*(\s+[A-Za-z][\w'-]*){1,2}$/.test(line)){
+        // Title-case it so "jane doe" reads as "Jane Doe"
+        out.callerName = line.replace(/\b[a-z]/g, c => c.toUpperCase());
+        break;
+      }
+    }
+  }
+  out.companyName = labeled.company;
+  out.contactName = labeled.contact;
+
+  // Budget → nearest bucket
+  const money = text.match(/\$\s?([\d,]+)\s*(k\b)?/i) || text.match(/\b(\d+)\s?k\b/i);
+  if(money){
+    let amt = parseFloat(String(money[1]).replace(/,/g,''));
+    if(/k/i.test(money[0]) && amt < 1000) amt *= 1000;
+    if(amt < 5000)       out.budgetRange = 'Under $5,000';
+    else if(amt < 15000) out.budgetRange = '$5,000–$15,000';
+    else if(amt < 30000) out.budgetRange = '$15,000–$30,000';
+    else                 out.budgetRange = '$30,000+';
+  } else if(/\b(not sure|no idea|unsure|don'?t know)\b/i.test(lower) && /budget/i.test(lower)){
+    out.budgetRange = 'Not sure yet';
+  }
+
+  // Timing
+  out.asap = /\b(asap|right away|as soon as possible|urgent|immediately)\b/i.test(lower);
+  out.startTimeframe = labeled.timeline || labeled.when ||
+    (text.match(/\b(?:next|this|within|in|by|before)\s+(?:the\s+|a\s+)?(?:week|month|couple\s+weeks|few\s+weeks|spring|summer|fall|autumn|winter|\d+\s*(?:weeks?|months?|days?)|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\w*\b/i) || [])[0] ||
+    (/\bno rush\b/i.test(lower) ? 'No rush' : '') ||
+    (/\basap|right away|as soon as possible\b/i.test(lower) ? 'ASAP' : '');
+
+  // Last painted
+  const painted = text.match(/(\d+)\s*(?:years?|yrs?)\s*ago/i);
+  if(painted) out.lastPainted = `${painted[1]} years ago`;
+  else if(/\bnever (?:been )?painted\b/i.test(lower)) out.lastPainted = 'Never';
+
+  // Colors
+  if(/\b(need help|not sure).{0,25}colou?rs?|colou?rs?.{0,25}(need help|help choosing)\b/i.test(lower)) out.colorsSelected = 'Need help choosing';
+  else if(/\bno colou?rs?\b|colou?rs?\s*(?:are\s*)?not (?:picked|selected|chosen)|haven'?t picked/i.test(lower)) out.colorsSelected = 'No';
+  else if(/colou?rs?\s*(?:are\s*)?(?:already\s*)?(?:picked|selected|chosen)|has colou?rs?|picked colou?rs?/i.test(lower)) out.colorsSelected = 'Yes';
+
+  // Surfaces
+  const surfaces = ['siding','trim','walls','ceilings','ceiling','cabinets','deck','fence','doors','stucco','shutters','railings','soffit','garage'];
+  const found = surfaces.filter(s => new RegExp(`\\b${s}\\b`,'i').test(lower));
+  if(labeled.surfaces || labeled.surface) out.surfacesNeeded = labeled.surfaces || labeled.surface;
+  else if(found.length) out.surfacesNeeded = found.join(', ');
+
+  // Why painting
+  if(labeled.why) out.whyPainting = labeled.why;
+  else if(/\bsell(ing)?\b|\blisting\b|\bon the market\b/i.test(lower)) out.whyPainting = 'Selling / listing the property';
+  else if(/\bdamage|water damage|storm|peeling|rot\b/i.test(lower))    out.whyPainting = 'Damage / repair';
+  else if(/\brefresh|update|freshen|looks? (?:old|tired|dated)\b/i.test(lower)) out.whyPainting = 'Refresh / update';
+  else if(/\bhoa\b/i.test(lower))                                       out.whyPainting = 'HOA requirement';
+  else if(/\bmoving in|just bought|new (?:home|house)\b/i.test(lower))  out.whyPainting = 'Recently purchased / moving in';
+
+  // Commercial vs residential + category
+  const isCommercial = /\b(commercial|business|property manager|hoa|office|apartment|complex|storefront|warehouse)\b/i.test(lower);
+  // Commercial needs a positive signal; everything else defaults to residential
+  // (the common case), and the agent can flip the swatch in one tap.
+  out.projectTypeGuess = isCommercial ? 'commercial' : 'residential';
+  // "trim" and "doors" are deliberately absent — they exist inside and out,
+  // so they'd wrongly flip an exterior job to "All Types".
+  const otherInt = /\b(interior|inside|indoor|walls|ceilings?|baseboards?|drywall)\b/i.test(lower);
+  const hasExt = /\b(exterior|outside|outdoor|siding|stucco|deck|fence|soffit|shutters)\b/i.test(lower);
+  const hasCab = /\bcabinets?\b/i.test(lower);
+  const hasInt = otherInt || hasCab;
+  // Only call it a Cabinets job when cabinets are the whole job, not a mention in passing.
+  if(hasCab && !otherInt && !hasExt) out.categorySub = 'Cabinets';
+  else if(hasInt && hasExt)          out.categorySub = 'All Types';
+  else if(hasExt)                    out.categorySub = 'Exterior';
+  else if(hasInt)                    out.categorySub = 'Interior';
+
+  // Lead source
+  const sources = [
+    [/\bgoogle|search|online\b/i, 'Internet leads'],
+    [/\blsa|local service ad/i,   'Local Service Ads'],
+    [/\brefer/i,                  'Referral'],
+    [/\bfacebook|instagram|\bfb\b|\big\b|social/i, 'Social Media (FB/IG)'],
+    [/\bmailer|postcard|mail\b/i, 'Mailers'],
+    [/\bradio\b/i,                'Radio Ads'],
+    [/\btruck|sign|drove by|saw your|around town/i, 'Seen Around Town'],
+    [/\brepeat|used you before|previous customer/i, 'Customer - Repeat'],
+    [/\bcall rail|callrail/i,     'Call Rail']
+  ];
+  for(const [re, val] of sources){ if(re.test(lower)){ out.leadSource = val; break; } }
+
+  return out;
+}
+
+// Optional: hand the notes to a local model instead. Falls back on any failure.
+async function parseWithAI(text){
+  const endpoint = (document.getElementById('aiEndpoint').value || '').trim().replace(/\/$/,'');
+  const model = (document.getElementById('aiModel').value || '').trim();
+  if(!endpoint || !model) return null;
+
+  const prompt = `Extract fields from these painting-company call notes. Reply with ONLY a JSON object, no prose.
+Keys (omit any you cannot find): callerName, companyName, contactName, phone, email, address, whyPainting, surfacesNeeded, lastPainted, startTimeframe, budgetRange, colorsSelected, leadSource, categorySub, projectTypeGuess, asap.
+budgetRange must be one of: "Under $5,000", "$5,000–$15,000", "$15,000–$30,000", "$30,000+", "Not sure yet".
+colorsSelected must be one of: "Yes", "No", "Need help choosing".
+categorySub must be one of: "Interior", "Exterior", "Cabinets", "All Types".
+projectTypeGuess must be "residential" or "commercial". asap must be true or false.
+
+NOTES:
+${text}`;
+
+  const ctrl = new AbortController();
+  const timer = setTimeout(()=>ctrl.abort(), 20000);
+  try{
+    const res = await fetch(`${endpoint}/api/generate`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model, prompt, stream:false, format:'json' }),
+      signal: ctrl.signal
+    });
+    clearTimeout(timer);
+    if(!res.ok) return null;
+    const data = await res.json();
+    return JSON.parse(data.response);
+  }catch(err){
+    clearTimeout(timer);
+    console.warn('Local AI unavailable, using built-in parser:', err.message);
+    return null;
+  }
+}
+
+async function sortNotesIntoFields(){
+  const text = scratchEl.value.trim();
+  if(!text){ showToast('Nothing to sort yet'); return; }
+
+  showToast('Sorting…');
+  const ai = await parseWithAI(text);
+  const p = ai ? Object.assign(parseNotes(text), ai) : parseNotes(text);
+
+  // Pick the project type first — the category dropdown depends on it.
+  if(!projectType && p.projectTypeGuess){
+    const swatch = document.querySelector(`.swatch[data-type="${p.projectTypeGuess}"]`);
+    if(swatch) swatch.click();
+  }
+
+  let filled = 0;
+  if(p.categorySub && projectType){
+    const prefix = projectType === 'commercial' ? 'Commercial' : 'Residential';
+    const val = (p.categorySub === 'Cabinets' || p.categorySub === 'All Types')
+      ? p.categorySub : `${prefix} ${p.categorySub}`;
+    if(setSelectIfEmpty('scopeOfWork', val)) filled++;
+  }
+
+  [['callerName',p.callerName], ['companyName',p.companyName], ['contactName',p.contactName],
+   ['phone',p.phone], ['email',p.email], ['address',p.address],
+   ['whyPainting',p.whyPainting], ['surfacesNeeded',p.surfacesNeeded],
+   ['lastPainted',p.lastPainted], ['startTimeframe',p.startTimeframe]
+  ].forEach(([id,val])=>{ if(setIfEmpty(id,val)) filled++; });
+
+  if(setGroupIfEmpty('budgetRange', p.budgetRange)) filled++;
+  if(setGroupIfEmpty('colorsSelected', p.colorsSelected)) filled++;
+  if(setSelectIfEmpty('referralSource', p.leadSource)) filled++;
+
+  if(p.asap && !document.getElementById('asapToggle').checked){
+    document.getElementById('asapToggle').checked = true;
+    document.getElementById('asapDeadlineWrap').classList.add('show');
+    filled++;
+  }
+
+  if(filled){
+    showToast(`${filled} field${filled>1?'s':''} filled${ai ? ' (local AI)' : ''} — notes kept`);
+    closeNotes();
+  } else {
+    showToast('Nothing new found — notes still go in the summary');
+  }
 }
 </script>
 
