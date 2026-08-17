@@ -78,10 +78,10 @@
     background:var(--pine);
     color:#FFFFFF;
     border-radius:var(--radius);
-    padding:16px 18px;
-    margin-bottom:20px;
-    font-size:15px;
-    line-height:1.5;
+    padding:13px 16px;
+    margin-bottom:16px;
+    font-size:14px;
+    line-height:1.45;
     position:relative;
   }
   .greeting-card .tag{
@@ -177,7 +177,7 @@
   }
   .step-title{
     font-family:'Roboto Slab',serif;
-    font-size:16px;
+    font-size:19px;
     font-weight:700;
     color:var(--heading);
     margin:0;
@@ -189,6 +189,18 @@
     margin:-8px 0 14px;
     font-style:italic;
   }
+
+  .say-line{
+    background:var(--clay-soft);
+    border-left:3px solid var(--clay);
+    padding:12px 14px;
+    border-radius:6px;
+    font-size:15px;
+    line-height:1.5;
+    margin:16px 0 4px;
+    color:var(--ink);
+  }
+  .com .say-line{background:var(--slate-soft); border-left-color:var(--slate);}
 
   .script-line{
     background:var(--clay-soft);
@@ -204,19 +216,19 @@
 
   label{
     display:block;
-    font-size:11.5px;
-    letter-spacing:.04em;
+    font-size:13px;
+    letter-spacing:.03em;
     text-transform:uppercase;
     color:var(--ink-soft);
-    font-weight:600;
-    margin:12px 0 5px;
+    font-weight:700;
+    margin:16px 0 6px;
   }
   input[type=text], input[type=tel], input[type=email], input[type=date], textarea, select{
     width:100%;
     border:1.5px solid var(--line);
     border-radius:8px;
-    padding:10px 11px;
-    font-size:15px;
+    padding:13px 13px;
+    font-size:17px;
     font-family:'Inter',sans-serif;
     color:var(--ink);
     background:var(--paper-recessed);
@@ -232,9 +244,9 @@
     border:1.5px solid var(--line);
     background:var(--paper-recessed);
     border-radius:20px;
-    padding:8px 14px;
-    font-size:13.5px;
-    font-weight:500;
+    padding:11px 17px;
+    font-size:15px;
+    font-weight:600;
     cursor:pointer;
     font-family:'Inter',sans-serif;
     color:var(--ink);
@@ -268,8 +280,8 @@
   .btn{
     border:none;
     border-radius:8px;
-    padding:10px 18px;
-    font-size:14px;
+    padding:13px 22px;
+    font-size:15px;
     font-weight:600;
     cursor:pointer;
     font-family:'Inter',sans-serif;
@@ -317,8 +329,9 @@
   /* ---- Fast Notes scratchpad ---- */
   .notes-fab{
     position:fixed;
-    right:16px;
-    bottom:84px;
+    left:50%;
+    transform:translateX(-50%);
+    bottom:78px;
     z-index:45;
     background:var(--gold);
     color:#2A2100;
@@ -334,7 +347,7 @@
     align-items:center;
     gap:7px;
   }
-  .notes-fab:active{transform:scale(.97);}
+  .notes-fab:active{transform:translateX(-50%) scale(.97);}
   .notes-fab .dot-badge{
     width:8px; height:8px; border-radius:50%;
     background:var(--pine); display:none;
@@ -389,6 +402,21 @@
     font-size:12px;
     font-family:'Inter',sans-serif;
     cursor:pointer;
+  }
+
+  @media (min-width:1180px){
+    body{padding-right:400px;}
+    .notes-fab{display:none;}
+    .notes-overlay{
+      display:flex;
+      top:24px; right:24px; bottom:88px;
+      left:auto; width:352px;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:var(--paper-raised);
+      box-shadow:0 6px 22px rgba(0,0,0,0.28);
+    }
+    .notes-overlay .close-notes{display:none;}
   }
 
   .progress-dots{display:flex; gap:5px; margin:2px 0 18px;}
@@ -488,30 +516,28 @@
     </button>
   </div>
 
-  <!-- STEP 1: WHO & WHAT -->
+  <!-- STEP 1 -->
   <div class="step" id="step1">
-    <div class="step-head"><div class="step-num">1</div><h3 class="step-title">Who & What</h3></div>
+    <div class="step-head"><div class="step-num">1</div><h3 class="step-title">Who &amp; What</h3></div>
 
-    <div class="script-line" id="line-companyOrName"></div>
     <div class="row2" id="companyFieldWrap" style="display:none;">
       <div>
-        <label>Company Name</label>
+        <label>Company</label>
         <input type="text" id="companyName" autocomplete="organization">
       </div>
       <div>
-        <label>Contact Name</label>
+        <label>Contact</label>
         <input type="text" id="contactName" autocomplete="name">
       </div>
     </div>
     <div id="resNameWrap">
-      <label>Full Name</label>
-      <input type="text" id="callerName" placeholder="May I get your full name?" autocomplete="name">
+      <label>Full name</label>
+      <input type="text" id="callerName" autocomplete="name">
     </div>
 
-    <div class="script-line">"And what type of painting project did you have in mind?"</div>
-    <label>Project Category</label>
+    <label>Category</label>
     <select id="scopeOfWork">
-      <option value="" disabled selected>Select project category…</option>
+      <option value="" disabled selected>Select…</option>
     </select>
 
     <div class="nav-buttons">
@@ -520,42 +546,36 @@
     </div>
   </div>
 
-  <!-- STEP 2: THE PROJECT (discovery) -->
+  <!-- STEP 2 -->
   <div class="step" id="step2">
-    <div class="step-head"><div class="step-num">2</div><h3 class="step-title">Their Project</h3></div>
-    <p class="step-hint">Let them talk here — this is where the job gets sold.</p>
+    <div class="step-head"><div class="step-num">2</div><h3 class="step-title">Project</h3></div>
 
-    <div class="script-line">"What's prompting the project — is this a refresh, getting ready to sell, damage repair, or something else?"</div>
-    <label>Why Are You Painting?</label>
-    <input type="text" id="whyPainting" placeholder="e.g. selling the home, general refresh, storm/water damage">
+    <label>Why painting</label>
+    <input type="text" id="whyPainting" placeholder="selling, refresh, damage…">
 
-    <div class="script-line">"Which surfaces are you looking to have painted?"</div>
-    <label>Surfaces Needing Paint</label>
-    <input type="text" id="surfacesNeeded" placeholder="e.g. exterior siding, interior walls, trim, cabinets, deck">
+    <label>Surfaces</label>
+    <input type="text" id="surfacesNeeded" placeholder="siding, trim, walls…">
 
-    <div class="script-line">"When was the last time this area was painted?"</div>
-    <label>Last Painted</label>
-    <input type="text" id="lastPainted" placeholder="e.g. about 5 years ago, never, not sure">
+    <label>Last painted</label>
+    <input type="text" id="lastPainted" placeholder="8 years ago / never">
 
-    <div class="script-line">"Have you picked out colors yet, or would it help to have someone walk you through options?"</div>
-    <label>Colors Selected?</label>
+    <label>Colors</label>
     <div class="btn-group" data-group="colorsSelected">
       <button class="opt-btn" data-val="Yes">Yes</button>
       <button class="opt-btn" data-val="No">No</button>
-      <button class="opt-btn" data-val="Need help choosing">Need help choosing</button>
+      <button class="opt-btn" data-val="Need help choosing">Needs help</button>
     </div>
 
-    <div class="script-line" style="margin-top:16px;">"How soon are you looking to get started?"</div>
     <label>Timeframe</label>
-    <input type="text" id="startTimeframe" placeholder="e.g. within a month, this spring, no rush">
+    <input type="text" id="startTimeframe" placeholder="next month / spring / no rush">
 
     <div class="skip-toggle">
       <input type="checkbox" id="asapToggle">
-      <label style="margin:0; text-transform:none; letter-spacing:0; font-weight:500; color:var(--ink);">ASAP — needs to start right away</label>
+      <label style="margin:0; text-transform:none; letter-spacing:0; font-weight:500; color:var(--ink);">ASAP</label>
     </div>
     <div class="conditional" id="asapDeadlineWrap">
-      <label>Target Deadline</label>
-      <input type="text" id="asapDeadline" placeholder="e.g. must be done by 9/15, before a listing goes live">
+      <label>Deadline</label>
+      <input type="text" id="asapDeadline" placeholder="done by 9/15">
     </div>
 
     <div class="nav-buttons">
@@ -564,36 +584,33 @@
     </div>
   </div>
 
-  <!-- STEP 3: CONTACT & PROPERTY -->
+  <!-- STEP 3 -->
   <div class="step" id="step3">
-    <div class="step-head"><div class="step-num">3</div><h3 class="step-title">Contact & Property</h3></div>
-
-    <div class="script-line">"Perfect. Let me grab your details so the estimator can get out to you."</div>
+    <div class="step-head"><div class="step-num">3</div><h3 class="step-title">Contact</h3></div>
 
     <div class="row2">
       <div>
-        <label>Best Phone Number</label>
+        <label>Phone</label>
         <input type="tel" id="phone" placeholder="(___) ___-____" autocomplete="tel" inputmode="tel">
       </div>
       <div>
-        <label>Best Email</label>
+        <label>Email</label>
         <input type="email" id="email" placeholder="name@email.com" autocomplete="email" inputmode="email">
       </div>
     </div>
 
-    <label>Property Address</label>
+    <label>Address</label>
     <input type="text" id="address" placeholder="Street, city, ZIP" autocomplete="street-address">
 
     <div class="skip-toggle">
       <input type="checkbox" id="returningClient">
-      <label style="margin:0; text-transform:none; letter-spacing:0; font-weight:500; color:var(--ink);">Returning client (skip referral question)</label>
+      <label style="margin:0; text-transform:none; letter-spacing:0; font-weight:500; color:var(--ink);">Returning client</label>
     </div>
 
     <div class="conditional show" id="referralWrap">
-      <div class="script-line">"And if you haven't worked with us before — how did you hear about us?"</div>
-      <label>Lead Source</label>
+      <label>Lead source</label>
       <select id="referralSource">
-        <option value="" disabled selected>Select lead source…</option>
+        <option value="" disabled selected>Select…</option>
         <option value="Ai Referral">Ai Referral</option>
         <option value="AWA - Estimator sold">AWA - Estimator sold</option>
         <option value="AWA - Project Manager Sold">AWA - Project Manager Sold</option>
@@ -623,39 +640,34 @@
     </div>
   </div>
 
-  <!-- STEP 4: BUDGET & SCHEDULING -->
+  <!-- STEP 4 -->
   <div class="step" id="step4">
-    <div class="step-head"><div class="step-num">4</div><h3 class="step-title">Budget & Scheduling</h3></div>
+    <div class="step-head"><div class="step-num">4</div><h3 class="step-title">Budget &amp; Next</h3></div>
 
-    <div class="script-line">"Do you have a budget range in mind? That way I can make sure we're pointing you toward options that actually make sense for you."</div>
-    <label>Budget Range</label>
+    <label>Budget</label>
     <div class="btn-group" data-group="budgetRange">
-      <button class="opt-btn" data-val="Under $5,000">Under $5,000</button>
-      <button class="opt-btn" data-val="$5,000–$15,000">$5,000–$15,000</button>
-      <button class="opt-btn" data-val="$15,000–$30,000">$15,000–$30,000</button>
-      <button class="opt-btn" data-val="$30,000+">$30,000+</button>
-      <button class="opt-btn" data-val="Not sure yet">Not sure yet</button>
+      <button class="opt-btn" data-val="Under $5,000">&lt;$5k</button>
+      <button class="opt-btn" data-val="$5,000–$15,000">$5–15k</button>
+      <button class="opt-btn" data-val="$15,000–$30,000">$15–30k</button>
+      <button class="opt-btn" data-val="$30,000+">$30k+</button>
+      <button class="opt-btn" data-val="Not sure yet">Not sure</button>
     </div>
 
-    <div class="script-line" style="margin-top:16px;" id="estimatorLine"></div>
-
-    <div class="script-line">"Any preference on how we should follow up — call, text, or email?"</div>
-    <label>Follow-Up Method</label>
+    <label>Follow-up</label>
     <div class="btn-group" data-group="followupMethod">
       <button class="opt-btn" data-val="Call">Call</button>
       <button class="opt-btn" data-val="Text">Text</button>
       <button class="opt-btn" data-val="Email">Email</button>
     </div>
 
-    <label style="margin-top:16px;">Best Time to Reach Them</label>
+    <label>Best time</label>
     <div class="btn-group" data-group="bestTime">
       <button class="opt-btn" data-val="Morning">Morning</button>
       <button class="opt-btn" data-val="Midday">Midday</button>
       <button class="opt-btn" data-val="Afternoon">Afternoon</button>
     </div>
 
-    <label>Notes / anything else mentioned on the call</label>
-    <textarea id="freeNotes" placeholder="Anything worth passing along to the team..."></textarea>
+    <div class="say-line" id="estimatorLine"></div>
 
     <div class="nav-buttons">
       <button class="btn btn-ghost" onclick="goToStep(3)">← Back</button>
@@ -663,15 +675,12 @@
     </div>
   </div>
 
-  <!-- STEP 5: WRAP UP -->
+  <!-- STEP 5 -->
   <div class="step" id="step5">
-    <div class="step-head"><div class="step-num">5</div><h3 class="step-title">Set Expectation & Close</h3></div>
+    <div class="step-head"><div class="step-num">5</div><h3 class="step-title">Close</h3></div>
 
-    <div class="script-line" id="expectationLine"></div>
-
-    <div class="close-card">
-      "Thanks again for calling Chism Brothers Painting — we look forward to helping you. Have a great day!"
-    </div>
+    <div class="say-line" id="expectationLine"></div>
+    <div class="say-line">"Thanks again for calling Chism Brothers Painting — we look forward to helping you. Have a great day!"</div>
 
     <div class="nav-buttons">
       <button class="btn btn-ghost" onclick="goToStep(4)">← Back</button>
@@ -706,7 +715,7 @@
 <div class="notes-overlay" id="notesOverlay">
   <div class="notes-head">
     <h2>Fast Notes</h2>
-    <button onclick="closeNotes()" aria-label="Close notes" style="background:none; border:none; font-size:26px; line-height:1; cursor:pointer; color:var(--ink-soft);">&times;</button>
+    <button class="close-notes" onclick="closeNotes()" aria-label="Close notes" style="background:none; border:none; font-size:26px; line-height:1; cursor:pointer; color:var(--ink-soft);">&times;</button>
   </div>
   <div class="chip-row">
     <button onclick="insertSnippet('Name: ')">Name</button>
@@ -748,31 +757,42 @@ let projectType = null;
 let currentStep = 0;
 let callStart = Date.now();
 
-const fields = ['scopeOfWork','whyPainting','surfacesNeeded','lastPainted','startTimeframe','asapDeadline','companyName','contactName','callerName','phone','email','address','referralSource','freeNotes'];
+const fields = ['scopeOfWork','whyPainting','surfacesNeeded','lastPainted','startTimeframe','asapDeadline','companyName','contactName','callerName','phone','email','address','referralSource','scratchPad'];
 const groups = {followupMethod:null, bestTime:null, colorsSelected:null, budgetRange:null};
 
-const CATEGORY_SUBTYPES = ['Interior', 'Exterior', 'Cabinets', 'All Types'];
+/* Residential and commercial sell different work, so each gets its own list.
+   `label` is what the agent reads; `value` is what lands in the summary /
+   JobTread. Edit these two arrays to change the dropdown. */
+const CATEGORIES = {
+  residential: [
+    {label:'Interior',  value:'Residential Interior'},
+    {label:'Exterior',  value:'Residential Exterior'},
+    {label:'Cabinets',  value:'Cabinets'},
+    {label:'All Types', value:'All Types'}
+  ],
+  commercial: [
+    {label:'Interior',  value:'Commercial Interior'},
+    {label:'Exterior',  value:'Commercial Exterior'},
+    {label:'All Types', value:'All Types'}
+  ]
+};
 
 function updateCategoryOptions(isCommercial){
-  const prefix = isCommercial ? 'Commercial' : 'Residential';
+  const list = isCommercial ? CATEGORIES.commercial : CATEGORIES.residential;
   const sel = document.getElementById('scopeOfWork');
   const prevValue = sel.value;
   sel.innerHTML = '';
   const placeholder = document.createElement('option');
-  placeholder.value = '';
-  placeholder.disabled = true;
-  placeholder.textContent = 'Select project category…';
+  placeholder.value = ''; placeholder.disabled = true;
+  placeholder.textContent = 'Select…';
   sel.appendChild(placeholder);
-  CATEGORY_SUBTYPES.forEach(sub=>{
+  list.forEach(({label, value})=>{
     const opt = document.createElement('option');
-    // Cabinets and All Types apply regardless of residential/commercial — no need
-    // to prefix them since the swatch above already shows the project type.
-    opt.value = (sub === 'Cabinets' || sub === 'All Types') ? sub : `${prefix} ${sub}`;
-    opt.textContent = sub;
+    opt.value = value; opt.textContent = label;
     sel.appendChild(opt);
   });
-  // keep the previous pick if it's still a valid option under the new type (e.g. Cabinets)
-  const stillValid = Array.from(sel.options).some(o => o.value === prevValue);
+  // keep the pick if it still exists under the new type (e.g. All Types)
+  const stillValid = Array.from(sel.options).some(o => o.value === prevValue && o.value);
   sel.value = stillValid ? prevValue : '';
   if(!stillValid) placeholder.selected = true;
 }
@@ -788,13 +808,57 @@ const ESTIMATORS = {
   }
 };
 
-// clock
-setInterval(()=>{
-  const s = Math.floor((Date.now()-callStart)/1000);
+/* ---- call clock ----
+   The elapsed time is always derived from callStart, never accumulated, so a
+   throttled or killed timer can never make it drift — it just needs a repaint.
+   Browsers throttle (and Brave can outright freeze) setInterval in a background
+   tab. That is exactly what happens when you hit Copy Summary and switch apps to
+   paste: the tab goes to the background and the display stops updating. So on
+   every route back to the foreground we recompute and restart the ticker. */
+let clockTimer = null;
+let lastClockRender = 0;
+// The clock is paused until Start Call and stops again on Save & New Call, so an
+// idle tab never accumulates time.
+let callActive = false;
+
+function renderClock(){
+  const s = callActive ? Math.max(0, Math.floor((Date.now() - callStart) / 1000)) : 0;
   const m = String(Math.floor(s/60)).padStart(2,'0');
   const sec = String(s%60).padStart(2,'0');
   document.getElementById('clock').textContent = `${m}:${sec}`;
-}, 1000);
+  lastClockRender = Date.now();
+}
+
+function startClock(){
+  if(clockTimer) clearInterval(clockTimer);
+  renderClock();
+  clockTimer = setInterval(renderClock, 1000);
+}
+
+// If the ticker missed a beat it was throttled or killed — rebuild it.
+// Otherwise just repaint. Either way the time shown is recomputed from
+// callStart, so it is correct the instant this runs.
+function ensureClockAlive(){
+  if(!callActive){ renderClock(); return; }
+  if(Date.now() - lastClockRender > 1500) startClock();
+  else renderClock();
+}
+
+function stopClock(){
+  callActive = false;
+  if(clockTimer){ clearInterval(clockTimer); clockTimer = null; }
+  renderClock();
+}
+
+startClock();
+
+// Every route back into the page revives the clock. Visibility/focus events
+// cover tab and app switching; the input events are the safety net for
+// browsers that suspend a background tab without firing them.
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) ensureClockAlive(); });
+['focus','pageshow'].forEach(ev => window.addEventListener(ev, ensureClockAlive));
+['pointerdown','keydown','touchstart','scroll'].forEach(ev =>
+  document.addEventListener(ev, ensureClockAlive, {passive:true, capture:true}));
 
 // agent name — remembered between calls (same person answers all shift),
 // so it survives "Save & New Call" and page reloads.
@@ -810,7 +874,9 @@ agentEl.addEventListener('input', ()=>{
 // start call
 document.getElementById('startCallBtn').addEventListener('click', ()=>{
   document.body.classList.remove('pre-call');
+  callActive = true;
   callStart = Date.now();
+  startClock();
   // don't steal focus from a name that's already remembered
   if(!agentEl.value.trim()) agentEl.focus();
 });
@@ -836,10 +902,6 @@ document.querySelectorAll('.swatch').forEach(btn=>{
     const isCommercial = projectType === 'commercial';
     document.getElementById('companyFieldWrap').style.display = isCommercial ? 'grid' : 'none';
     document.getElementById('resNameWrap').style.display = isCommercial ? 'none' : 'block';
-    document.getElementById('line-companyOrName').textContent = isCommercial
-      ? '"What\'s the company name, and who\'s the best contact for this project?"'
-      : '"May I get your full name?"';
-
     const estimator = isCommercial ? ESTIMATORS.commercial : ESTIMATORS.residential;
     document.getElementById('estimatorLine').textContent = estimator.line;
 
@@ -987,10 +1049,10 @@ function buildSummary(){
   if(!returning){
     lines.push(`Lead Source: ${getVal('referralSource') || '—'}`);
   }
-  if(getVal('freeNotes')){
-    lines.push(`Notes: ${getVal('freeNotes')}`);
+  if(getVal('scratchPad')){
+    lines.push(`Notes: ${getVal('scratchPad')}`);
   }
-  const s = Math.floor((Date.now()-callStart)/1000);
+  const s = callActive ? Math.floor((Date.now()-callStart)/1000) : 0;
   const m = String(Math.floor(s/60)).padStart(2,'0');
   const sec = String(s%60).padStart(2,'0');
   lines.push(`Call Length: ${m}:${sec}`);
@@ -1005,6 +1067,7 @@ function copySummary(){
     btn.textContent = 'Copied ✓';
     btn.classList.add('copied');
     setTimeout(()=>{ btn.textContent='Copy Summary'; btn.classList.remove('copied'); }, 1800);
+    startClock();   // copying is not the end of the call — keep the timer honest
   }
 
   // Fallback for non-secure contexts (e.g. opening the file directly) where
@@ -1049,7 +1112,7 @@ function showToast(msg){
 
 function hasMeaningfulData(){
   return Boolean(getVal('callerName') || getVal('companyName') || getVal('phone') || getVal('email')
-    || getVal('address') || getVal('scopeOfWork') || getVal('freeNotes'));
+    || getVal('address') || getVal('scopeOfWork') || getVal('scratchPad'));
 }
 
 function storageSet(key, value){
@@ -1201,7 +1264,6 @@ async function resetForm(){
   fields.forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
   phoneWarned = false;
   document.getElementById('phone').classList.remove('field-warn');
-  document.getElementById('scratchPad').value = '';
   document.getElementById('notesFab').classList.remove('has-notes');
   document.getElementById('returningClient').checked = false;
   document.getElementById('referralWrap').classList.add('show');
@@ -1221,6 +1283,7 @@ async function resetForm(){
   currentStep = 0;
   [1,2,3,4,5].forEach(i=> document.getElementById('step'+i).classList.remove('active'));
   callStart = Date.now();
+  stopClock();
   updateDots();
   document.body.classList.add('pre-call');
   window.scrollTo({top:0, behavior:'smooth'});
@@ -1235,12 +1298,10 @@ async function resetForm(){
    ============================================================ */
 
 const scratchEl = document.getElementById('scratchPad');
-const freeNotesEl = document.getElementById('freeNotes');
 const notesFab = document.getElementById('notesFab');
 
 // Scratchpad and the step-4 Notes box are the same data, two views of it.
-scratchEl.addEventListener('input', ()=>{ freeNotesEl.value = scratchEl.value; markNotes(); });
-freeNotesEl.addEventListener('input', ()=>{ scratchEl.value = freeNotesEl.value; markNotes(); });
+scratchEl.addEventListener('input', markNotes);
 
 function markNotes(){
   notesFab.classList.toggle('has-notes', scratchEl.value.trim().length > 0);
@@ -1262,7 +1323,6 @@ function insertSnippet(text){
   scratchEl.focus();
   const len = scratchEl.value.length;
   scratchEl.setSelectionRange(len, len);
-  freeNotesEl.value = scratchEl.value;
   markNotes();
 }
 function toggleAiSettings(e){
@@ -1326,9 +1386,19 @@ function parseNotes(text){
   // Email
   out.email = labeled.email || (text.match(/[\w.+-]+@[\w-]+\.[\w.]+/) || [])[0];
 
-  // Address — labeled, else a line that looks like a street address
-  out.address = labeled.address ||
-    (text.match(/\b\d+[\w-]*\s+[\w.'-]+(?:\s+[\w.'-]+)*\s+(?:st|street|ave|avenue|rd|road|dr|drive|ln|lane|blvd|boulevard|way|ct|court|pl|place|cir|circle|ter|terrace|hwy|highway|pkwy|parkway)\b\.?[^\n]*/i) || [])[0];
+  // Address — labeled, else the FIRST line that looks like a street address.
+  // Scanned per line with [^\S\n] (space/tab but never a newline): a plain \s
+  // lets the greedy match run across lines and backtrack onto a later stray
+  // "way"/"ct"/"pl", swallowing half the note into the address field.
+  const STREET = /\b\d+[\w-]*[^\S\n]+[\w.'-]+(?:[^\S\n]+[\w.'-]+){0,4}?[^\S\n]+(?:st|street|ave|avenue|rd|road|dr|drive|ln|lane|blvd|boulevard|way|ct|court|pl|place|cir|circle|ter|terrace|hwy|highway|pkwy|parkway|trl|trail|loop)\b\.?/i;
+  if(labeled.address){
+    out.address = labeled.address;
+  } else {
+    for(const raw of text.split('\n')){
+      const line = raw.trim();
+      if(STREET.test(line)){ out.address = line; break; }   // keep the whole line (unit, city, ZIP)
+    }
+  }
 
   // Name — labeled, else first line of 2-3 capitalized words that isn't something else
   if(labeled.name){
@@ -1372,8 +1442,10 @@ function parseNotes(text){
   out.asap = /\b(asap|right away|as soon as possible|urgent|immediately)\b/i.test(lower);
   out.startTimeframe = labeled.timeline || labeled.when ||
     (text.match(/\b(?:next|this|within|in|by|before)\s+(?:the\s+|a\s+)?(?:week|month|couple\s+weeks|few\s+weeks|spring|summer|fall|autumn|winter|\d+\s*(?:weeks?|months?|days?)|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\w*\b/i) || [])[0] ||
-    (/\bno rush\b/i.test(lower) ? 'No rush' : '') ||
-    (/\basap|right away|as soon as possible\b/i.test(lower) ? 'ASAP' : '');
+    (/\basap|right away|as soon as possible\b/i.test(lower) ? 'ASAP' : '') ||
+    (/\b(way later|much later|not for a while|next year|down the road|sometime later|no timeline|no time frame)\b/i.test(lower) ? 'Long term — way later' : '') ||
+    (/\b(no rush|not urgent|whenever|eventually|no hurry)\b/i.test(lower) ? 'No rush' : '') ||
+    (/\b(get|gets|getting) back (to us|to me|later)\b|\bcall(ing)? back later\b|\bthinking about it\b/i.test(lower) ? 'Will get back to us later' : '');
 
   // Last painted
   const painted = text.match(/(\d+)\s*(?:years?|yrs?)\s*ago/i);
@@ -1386,7 +1458,10 @@ function parseNotes(text){
   else if(/colou?rs?\s*(?:are\s*)?(?:already\s*)?(?:picked|selected|chosen)|has colou?rs?|picked colou?rs?/i.test(lower)) out.colorsSelected = 'Yes';
 
   // Surfaces
-  const surfaces = ['siding','trim','walls','ceilings','ceiling','cabinets','deck','fence','doors','stucco','shutters','railings','soffit','garage'];
+  const surfaces = ['siding','trim','walls','ceilings','ceiling','cabinets','deck','fence','fencing',
+    'doors','windows','window frames','stucco','shutters','railings','soffit','soffits','fascia','eaves',
+    'gutters','garage','garage door','patio','porch','columns','pillars','brick','wrought iron','baseboards',
+    'crown molding','beams','pergola','balcony','stairs','handrails'];
   const found = surfaces.filter(s => new RegExp(`\\b${s}\\b`,'i').test(lower));
   if(labeled.surfaces || labeled.surface) out.surfacesNeeded = labeled.surfaces || labeled.surface;
   else if(found.length) out.surfacesNeeded = found.join(', ');
@@ -1394,7 +1469,11 @@ function parseNotes(text){
   // Why painting
   if(labeled.why) out.whyPainting = labeled.why;
   else if(/\bsell(ing)?\b|\blisting\b|\bon the market\b/i.test(lower)) out.whyPainting = 'Selling / listing the property';
-  else if(/\bdamage|water damage|storm|peeling|rot\b/i.test(lower))    out.whyPainting = 'Damage / repair';
+  else if(/\b(sun damage|sun|uv|faded|fading|weathered|chalking)\b/i.test(lower) && /\b(crack|cracks|cracking|split|splitting|dry rot|damage)\b/i.test(lower))
+                                                                        out.whyPainting = 'Sun damage — cracking / weathering';
+  else if(/\b(crack|cracks|cracking|peeling|chipping|flaking|dry rot|rot|rotted|water damage|storm|damage|bubbling)\b/i.test(lower))
+                                                                        out.whyPainting = 'Damage / repair';
+  else if(/\b(faded|fading|weathered|sun damage|chalking)\b/i.test(lower)) out.whyPainting = 'Sun-faded / weathered';
   else if(/\brefresh|update|freshen|looks? (?:old|tired|dated)\b/i.test(lower)) out.whyPainting = 'Refresh / update';
   else if(/\bhoa\b/i.test(lower))                                       out.whyPainting = 'HOA requirement';
   else if(/\bmoving in|just bought|new (?:home|house)\b/i.test(lower))  out.whyPainting = 'Recently purchased / moving in';
@@ -1417,18 +1496,21 @@ function parseNotes(text){
   else if(hasInt)                    out.categorySub = 'Interior';
 
   // Lead source
+  // Match lead source against text with emails/URLs stripped — otherwise
+  // "jane@email.com" trips the mailer rule and similar false hits.
+  const srcText = lower.replace(/[\w.+-]+@[\w-]+\.[\w.]+/g,' ').replace(/https?:\/\/\S+/g,' ');
   const sources = [
     [/\bgoogle|search|online\b/i, 'Internet leads'],
     [/\blsa|local service ad/i,   'Local Service Ads'],
     [/\brefer/i,                  'Referral'],
     [/\bfacebook|instagram|\bfb\b|\big\b|social/i, 'Social Media (FB/IG)'],
-    [/\bmailer|postcard|mail\b/i, 'Mailers'],
     [/\bradio\b/i,                'Radio Ads'],
-    [/\btruck|sign|drove by|saw your|around town/i, 'Seen Around Town'],
+    [/\btruck|yard sign|drove by|saw your|around town|seen around/i, 'Seen Around Town'],
+    [/\b(mailer|mailers|postcard|direct mail)\b/i, 'Mailers'],
     [/\brepeat|used you before|previous customer/i, 'Customer - Repeat'],
     [/\bcall rail|callrail/i,     'Call Rail']
   ];
-  for(const [re, val] of sources){ if(re.test(lower)){ out.leadSource = val; break; } }
+  for(const [re, val] of sources){ if(re.test(srcText)){ out.leadSource = val; break; } }
 
   return out;
 }
