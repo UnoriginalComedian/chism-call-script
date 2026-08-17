@@ -120,6 +120,7 @@
     text-align:left;
     transition:border-color .15s, transform .1s;
     font-family:'Inter',sans-serif;
+    color:var(--ink);
   }
   .swatch:active{transform:scale(.98);}
   .swatch .chip{
@@ -210,6 +211,7 @@
     background:var(--paper-recessed);
   }
   input:focus, textarea:focus, select:focus{outline:2px solid var(--pine); outline-offset:1px; border-color:var(--pine);}
+  .field-warn{border-color:var(--clay) !important; outline:2px solid var(--clay); outline-offset:1px;}
   textarea{resize:vertical; min-height:56px;}
   select{cursor:pointer;}
   select option{background:var(--paper-recessed); color:var(--ink);}
@@ -473,7 +475,7 @@
 
     <div class="nav-buttons">
       <span></span>
-      <button class="btn btn-primary" onclick="goToStep(2)">Next →</button>
+      <button class="btn btn-primary" onclick="tryLeaveStep1()">Next →</button>
     </div>
   </div>
 
@@ -713,6 +715,25 @@ document.querySelectorAll('.btn-group').forEach(group=>{
       groups[key] = btn.dataset.val;
     });
   });
+});
+
+let phoneWarned = false;
+function tryLeaveStep1(){
+  const phoneEl = document.getElementById('phone');
+  if(!getVal('phone') && !phoneWarned){
+    phoneWarned = true;
+    phoneEl.classList.add('field-warn');
+    phoneEl.focus();
+    showToast('No phone number — tap Next again to continue anyway');
+    return;
+  }
+  phoneWarned = false;
+  phoneEl.classList.remove('field-warn');
+  goToStep(2);
+}
+document.getElementById('phone').addEventListener('input', ()=>{
+  phoneWarned = false;
+  document.getElementById('phone').classList.remove('field-warn');
 });
 
 function goToStep(n){
@@ -999,6 +1020,8 @@ async function clearLog(){
 async function resetForm(){
   const saved = await saveCurrentCallToLog();
   fields.forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  phoneWarned = false;
+  document.getElementById('phone').classList.remove('field-warn');
   document.getElementById('returningClient').checked = false;
   document.getElementById('referralWrap').classList.add('show');
   document.getElementById('asapToggle').checked = false;
