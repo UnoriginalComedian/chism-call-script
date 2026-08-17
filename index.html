@@ -8,20 +8,20 @@
   @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap');
 
   :root{
-    --paper:#26282C;
-    --paper-raised:#323539;
-    --paper-recessed:#1F2124;
-    --ink:#F3F1EC;
-    --ink-soft:#AFB3AF;
-    --line:#484B4F;
-    --pine:#38A379;
+    --paper:#3B3E43;
+    --paper-raised:#494C52;
+    --paper-recessed:#2F3236;
+    --ink:#F7F5F0;
+    --ink-soft:#C7CAC6;
+    --line:#63666C;
+    --pine:#3FAE81;
     --pine-deep:#0C1F17;
-    --heading:#7BE0AE;
-    --clay:#E88F63;
-    --clay-soft:#40312A;
-    --slate:#8BB6DD;
-    --slate-soft:#2C3A47;
-    --gold:#EBC562;
+    --heading:#83E4B4;
+    --clay:#EC9A6C;
+    --clay-soft:#4A3A31;
+    --slate:#93BEE3;
+    --slate-soft:#334353;
+    --gold:#EFCA6C;
     --radius:14px;
   }
 
@@ -137,9 +137,9 @@
     margin:0 0 2px;
   }
   .swatch-sub{font-size:12.5px; color:var(--ink-soft); margin:0;}
-  .swatch.selected{border-color:var(--pine); box-shadow:0 0 0 3px rgba(56,163,121,0.32);}
-  .swatch.res.selected{border-color:var(--clay); box-shadow:0 0 0 3px rgba(232,143,99,0.28);}
-  .swatch.com.selected{border-color:var(--slate); box-shadow:0 0 0 3px rgba(139,182,221,0.28);}
+  .swatch.selected{border-color:var(--pine); box-shadow:0 0 0 3px rgba(63,174,129,0.35);}
+  .swatch.res.selected{border-color:var(--clay); box-shadow:0 0 0 3px rgba(236,154,108,0.3);}
+  .swatch.com.selected{border-color:var(--slate); box-shadow:0 0 0 3px rgba(147,190,227,0.3);}
 
   .step{
     background:var(--paper-raised);
@@ -327,7 +327,7 @@
     font-weight:700;
     font-family:'Inter',sans-serif;
     cursor:pointer;
-    box-shadow:0 4px 14px rgba(56,163,121,0.4);
+    box-shadow:0 4px 14px rgba(63,174,129,0.4);
   }
   .start-call-btn:active{transform:scale(.98);}
   .start-log-link{
@@ -406,12 +406,6 @@
     <label>Project Category</label>
     <select id="scopeOfWork">
       <option value="" disabled selected>Select project category…</option>
-      <option value="Residential Interior">Residential Interior</option>
-      <option value="Residential Exterior">Residential Exterior</option>
-      <option value="Commercial Interior">Commercial Interior</option>
-      <option value="Commercial Exterior">Commercial Exterior</option>
-      <option value="Cabinets">Cabinets</option>
-      <option value="All Types">All Types</option>
     </select>
 
     <div class="script-line" id="line-companyOrName"></div>
@@ -622,6 +616,32 @@ let callStart = Date.now();
 const fields = ['scopeOfWork','whyPainting','surfacesNeeded','lastPainted','startTimeframe','asapDeadline','companyName','contactName','callerName','phone','email','address','referralSource','freeNotes'];
 const groups = {followupMethod:null, bestTime:null, colorsSelected:null, budgetRange:null};
 
+const CATEGORY_SUBTYPES = ['Interior', 'Exterior', 'Cabinets', 'All Types'];
+
+function updateCategoryOptions(isCommercial){
+  const prefix = isCommercial ? 'Commercial' : 'Residential';
+  const sel = document.getElementById('scopeOfWork');
+  const prevValue = sel.value;
+  sel.innerHTML = '';
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.disabled = true;
+  placeholder.textContent = 'Select project category…';
+  sel.appendChild(placeholder);
+  CATEGORY_SUBTYPES.forEach(sub=>{
+    const opt = document.createElement('option');
+    // Cabinets and All Types apply regardless of residential/commercial — no need
+    // to prefix them since the swatch above already shows the project type.
+    opt.value = (sub === 'Cabinets' || sub === 'All Types') ? sub : `${prefix} ${sub}`;
+    opt.textContent = sub;
+    sel.appendChild(opt);
+  });
+  // keep the previous pick if it's still a valid option under the new type (e.g. Cabinets)
+  const stillValid = Array.from(sel.options).some(o => o.value === prevValue);
+  sel.value = stillValid ? prevValue : '';
+  if(!stillValid) placeholder.selected = true;
+}
+
 const ESTIMATORS = {
   residential: {
     name: 'Matt Drake',
@@ -665,6 +685,8 @@ document.querySelectorAll('.swatch').forEach(btn=>{
 
     const estimator = isCommercial ? ESTIMATORS.commercial : ESTIMATORS.residential;
     document.getElementById('estimatorLine').textContent = estimator.line;
+
+    updateCategoryOptions(isCommercial);
 
     goToStep(1);
     updateDots();
