@@ -8,18 +8,19 @@
   @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap');
 
   :root{
-    --paper:#FAF7F1;
-    --paper-raised:#FFFFFF;
-    --ink:#20241F;
-    --ink-soft:#5B6158;
-    --line:#E4DFD2;
-    --pine:#1E4A3F;
-    --pine-deep:#123229;
-    --clay:#BD5B34;
-    --clay-soft:#F3E2D6;
-    --slate:#4C6B8A;
-    --slate-soft:#DFE7EE;
-    --gold:#D8A93B;
+    --paper:#14171A;
+    --paper-raised:#1D2124;
+    --ink:#ECE9E2;
+    --ink-soft:#98A198;
+    --line:#2B302D;
+    --pine:#2F8F68;
+    --pine-deep:#0C1F17;
+    --heading:#6FD9A8;
+    --clay:#E2825A;
+    --clay-soft:#33251E;
+    --slate:#7FACD4;
+    --slate-soft:#1F2933;
+    --gold:#E6BE55;
     --radius:14px;
   }
 
@@ -56,7 +57,7 @@
     font-family:'Roboto Slab',serif;
     font-size:26px;
     margin:0;
-    color:var(--pine-deep);
+    color:var(--heading);
     line-height:1.15;
   }
   .call-clock{
@@ -66,11 +67,11 @@
     text-align:right;
     white-space:nowrap;
   }
-  .call-clock b{color:var(--pine-deep); font-size:16px;}
+  .call-clock b{color:var(--heading); font-size:16px;}
 
   .greeting-card{
     background:var(--pine);
-    color:var(--paper);
+    color:#FFFFFF;
     border-radius:var(--radius);
     padding:16px 18px;
     margin-bottom:20px;
@@ -135,9 +136,9 @@
     margin:0 0 2px;
   }
   .swatch-sub{font-size:12.5px; color:var(--ink-soft); margin:0;}
-  .swatch.selected{border-color:var(--pine); box-shadow:0 0 0 3px rgba(30,74,63,0.12);}
-  .swatch.res.selected{border-color:var(--clay); box-shadow:0 0 0 3px rgba(189,91,52,0.15);}
-  .swatch.com.selected{border-color:var(--slate); box-shadow:0 0 0 3px rgba(76,107,138,0.15);}
+  .swatch.selected{border-color:var(--pine); box-shadow:0 0 0 3px rgba(47,143,104,0.28);}
+  .swatch.res.selected{border-color:var(--clay); box-shadow:0 0 0 3px rgba(226,130,90,0.25);}
+  .swatch.com.selected{border-color:var(--slate); box-shadow:0 0 0 3px rgba(127,172,212,0.25);}
 
   .step{
     background:var(--paper-raised);
@@ -172,7 +173,7 @@
     font-family:'Roboto Slab',serif;
     font-size:16px;
     font-weight:700;
-    color:var(--pine-deep);
+    color:var(--heading);
     margin:0;
   }
 
@@ -197,7 +198,7 @@
     font-weight:600;
     margin:12px 0 5px;
   }
-  input[type=text], input[type=tel], input[type=email], textarea{
+  input[type=text], input[type=tel], input[type=email], input[type=date], textarea, select{
     width:100%;
     border:1.5px solid var(--line);
     border-radius:8px;
@@ -205,15 +206,17 @@
     font-size:15px;
     font-family:'Inter',sans-serif;
     color:var(--ink);
-    background:#fff;
+    background:var(--paper-raised);
   }
-  input:focus, textarea:focus{outline:2px solid var(--pine); outline-offset:1px; border-color:var(--pine);}
+  input:focus, textarea:focus, select:focus{outline:2px solid var(--pine); outline-offset:1px; border-color:var(--pine);}
   textarea{resize:vertical; min-height:56px;}
+  select{cursor:pointer;}
+  select option{background:var(--paper-raised); color:var(--ink);}
 
   .btn-group{display:flex; flex-wrap:wrap; gap:8px; margin-top:2px;}
   .opt-btn{
     border:1.5px solid var(--line);
-    background:#fff;
+    background:var(--paper-raised);
     border-radius:20px;
     padding:8px 14px;
     font-size:13.5px;
@@ -269,7 +272,7 @@
     margin-top:16px;
     font-style:italic;
     font-size:14.5px;
-    color:var(--pine-deep);
+    color:var(--heading);
   }
 
   .summary-bar{
@@ -323,7 +326,7 @@
     font-weight:700;
     font-family:'Inter',sans-serif;
     cursor:pointer;
-    box-shadow:0 4px 14px rgba(30,74,63,0.25);
+    box-shadow:0 4px 14px rgba(47,143,104,0.35);
   }
   .start-call-btn:active{transform:scale(.98);}
   .start-log-link{
@@ -440,7 +443,29 @@
     <div class="conditional show" id="referralWrap">
       <div class="script-line">"And if you haven't worked with us before — how did you hear about us?"</div>
       <label>Lead Source</label>
-      <input type="text" id="referralSource" placeholder="Google, referral, truck signage, etc.">
+      <select id="referralSource">
+        <option value="" disabled selected>Select lead source…</option>
+        <option value="Ai Referral">Ai Referral</option>
+        <option value="AWA - Estimator sold">AWA - Estimator sold</option>
+        <option value="AWA - Project Manager Sold">AWA - Project Manager Sold</option>
+        <option value="Business Development">Business Development</option>
+        <option value="Call Rail">Call Rail</option>
+        <option value="Customer - Repeat">Customer - Repeat</option>
+        <option value="DD SelfGen">DD SelfGen</option>
+        <option value="Internet leads">Internet leads</option>
+        <option value="Legacy Customer">Legacy Customer</option>
+        <option value="Local Service Ads">Local Service Ads</option>
+        <option value="Mailers">Mailers</option>
+        <option value="ME SelfGen">ME SelfGen</option>
+        <option value="MK SelfGen">MK SelfGen</option>
+        <option value="Other">Other</option>
+        <option value="Professional Referral">Professional Referral</option>
+        <option value="Radio Ads">Radio Ads</option>
+        <option value="Referral">Referral</option>
+        <option value="Seen Around Town">Seen Around Town</option>
+        <option value="Social Media (FB/IG)">Social Media (FB/IG)</option>
+        <option value="Unbounce Forms">Unbounce Forms</option>
+      </select>
     </div>
 
     <div class="nav-buttons">
@@ -449,9 +474,50 @@
     </div>
   </div>
 
-  <!-- STEP 2: SCHEDULING PREFS -->
+  <!-- STEP 2: PROJECT DETAILS -->
   <div class="step" id="step2">
-    <div class="step-head"><div class="step-num">2</div><h3 class="step-title">Follow-Up Preferences</h3></div>
+    <div class="step-head"><div class="step-num">2</div><h3 class="step-title">Project Details</h3></div>
+
+    <div class="script-line">"What's prompting the project — is this a refresh, getting ready to sell, damage repair, or something else?"</div>
+    <label>Why Are You Painting?</label>
+    <input type="text" id="whyPainting" placeholder="e.g. selling the home, general refresh, storm/water damage">
+
+    <div class="script-line">"Which surfaces are you looking to have painted?"</div>
+    <label>Surfaces Needing Paint</label>
+    <input type="text" id="surfacesNeeded" placeholder="e.g. exterior siding, interior walls, trim, cabinets, deck">
+
+    <div class="script-line">"When was the last time this area was painted?"</div>
+    <label>Last Painted</label>
+    <input type="text" id="lastPainted" placeholder="e.g. about 5 years ago, never, not sure">
+
+    <label>Have You Selected Colors for Your Project?</label>
+    <div class="btn-group" data-group="colorsSelected">
+      <button class="opt-btn" data-val="Yes">Yes</button>
+      <button class="opt-btn" data-val="No">No</button>
+      <button class="opt-btn" data-val="Need help choosing">Need help choosing</button>
+    </div>
+
+    <label style="margin-top:16px;">"How soon are you looking to get started?"</label>
+    <input type="text" id="startTimeframe" placeholder="e.g. within a month, this spring, no rush">
+
+    <div class="skip-toggle">
+      <input type="checkbox" id="asapToggle">
+      <label style="margin:0; text-transform:none; letter-spacing:0; font-weight:500; color:var(--ink);">ASAP — needs to start right away</label>
+    </div>
+    <div class="conditional" id="asapDeadlineWrap">
+      <label>Target Deadline</label>
+      <input type="text" id="asapDeadline" placeholder="e.g. must be done by 9/15, before a listing goes live">
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goToStep(1)">← Back</button>
+      <button class="btn btn-primary" onclick="goToStep(3)">Next →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: SCHEDULING PREFS -->
+  <div class="step" id="step3">
+    <div class="step-head"><div class="step-num">3</div><h3 class="step-title">Follow-Up Preferences</h3></div>
 
     <div class="script-line">"Any preference on how we should follow up — call, text, or email?"</div>
     <div class="btn-group" data-group="followupMethod">
@@ -471,14 +537,14 @@
     <textarea id="freeNotes" placeholder="Anything worth passing along to the team..."></textarea>
 
     <div class="nav-buttons">
-      <button class="btn btn-ghost" onclick="goToStep(1)">← Back</button>
-      <button class="btn btn-primary" onclick="goToStep(3)">Next →</button>
+      <button class="btn btn-ghost" onclick="goToStep(2)">← Back</button>
+      <button class="btn btn-primary" onclick="goToStep(4)">Next →</button>
     </div>
   </div>
 
-  <!-- STEP 3: WRAP UP -->
-  <div class="step" id="step3">
-    <div class="step-head"><div class="step-num">3</div><h3 class="step-title">Set Expectation & Close</h3></div>
+  <!-- STEP 4: WRAP UP -->
+  <div class="step" id="step4">
+    <div class="step-head"><div class="step-num">4</div><h3 class="step-title">Set Expectation & Close</h3></div>
 
     <div class="script-line" id="expectationLine"></div>
 
@@ -487,7 +553,7 @@
     </div>
 
     <div class="nav-buttons">
-      <button class="btn btn-ghost" onclick="goToStep(2)">← Back</button>
+      <button class="btn btn-ghost" onclick="goToStep(3)">← Back</button>
       <span></span>
     </div>
   </div>
@@ -501,7 +567,7 @@
 <div id="logOverlay" style="display:none; position:fixed; inset:0; background:rgba(20,24,20,0.55); z-index:50; padding:24px 16px; overflow-y:auto;">
   <div style="max-width:640px; margin:0 auto; background:var(--paper); border-radius:16px; padding:20px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-      <h2 style="font-family:'Roboto Slab',serif; font-size:19px; color:var(--pine-deep); margin:0;">Call Log</h2>
+      <h2 style="font-family:'Roboto Slab',serif; font-size:19px; color:var(--heading); margin:0;">Call Log</h2>
       <button onclick="closeLog()" style="background:none; border:none; font-size:22px; line-height:1; cursor:pointer; color:var(--ink-soft);">&times;</button>
     </div>
     <div style="display:flex; gap:8px; margin-bottom:14px;">
@@ -522,8 +588,8 @@ let projectType = null;
 let currentStep = 0;
 let callStart = Date.now();
 
-const fields = ['scopeOfWork','companyName','contactName','callerName','phone','email','address','referralSource','freeNotes'];
-const groups = {followupMethod:null, bestTime:null};
+const fields = ['scopeOfWork','whyPainting','surfacesNeeded','lastPainted','startTimeframe','asapDeadline','companyName','contactName','callerName','phone','email','address','referralSource','freeNotes'];
+const groups = {followupMethod:null, bestTime:null, colorsSelected:null};
 
 // clock
 setInterval(()=>{
@@ -565,6 +631,11 @@ document.getElementById('returningClient').addEventListener('change', (e)=>{
   document.getElementById('referralWrap').classList.toggle('show', !e.target.checked);
 });
 
+// ASAP toggle
+document.getElementById('asapToggle').addEventListener('change', (e)=>{
+  document.getElementById('asapDeadlineWrap').classList.toggle('show', e.target.checked);
+});
+
 // button groups
 document.querySelectorAll('.btn-group').forEach(group=>{
   const key = group.dataset.group;
@@ -579,17 +650,17 @@ document.querySelectorAll('.btn-group').forEach(group=>{
 
 function goToStep(n){
   currentStep = n;
-  [1,2,3].forEach(i=>{
+  [1,2,3,4].forEach(i=>{
     document.getElementById('step'+i).classList.toggle('active', i===n);
   });
-  if(n===3) updateExpectationLine();
+  if(n===4) updateExpectationLine();
   updateDots();
   window.scrollTo({top: document.getElementById('step'+n).offsetTop - 20, behavior:'smooth'});
 }
 
 function updateDots(){
   const dots = document.getElementById('progressDots');
-  const total = 3;
+  const total = 4;
   const filled = projectType ? currentStep : 0;
   dots.innerHTML = '';
   for(let i=1;i<=total;i++){
@@ -618,6 +689,16 @@ function buildSummary(){
   lines.push(`CHISM BROTHERS PAINTING — CALL SUMMARY`);
   lines.push(`Project Type: ${type}`);
   lines.push(`Scope of Work: ${getVal('scopeOfWork') || '—'}`);
+  lines.push(`Why Painting: ${getVal('whyPainting') || '—'}`);
+  lines.push(`Surfaces Needing Paint: ${getVal('surfacesNeeded') || '—'}`);
+  lines.push(`Last Painted: ${getVal('lastPainted') || '—'}`);
+  lines.push(`Colors Selected: ${groups.colorsSelected || '—'}`);
+  lines.push(`Start Timeframe: ${getVal('startTimeframe') || '—'}`);
+  const isAsap = document.getElementById('asapToggle').checked;
+  lines.push(`ASAP: ${isAsap ? 'Yes' : 'No'}`);
+  if(isAsap){
+    lines.push(`Target Deadline: ${getVal('asapDeadline') || '—'}`);
+  }
 
   if(projectType==='commercial'){
     lines.push(`Company: ${getVal('companyName') || '—'}`);
@@ -747,8 +828,8 @@ async function openLog(){
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
         <span style="font-size:12px; color:var(--ink-soft); font-weight:600;">${when}</span>
         <div style="display:flex; gap:6px;">
-          <button style="font-size:12px; border:1px solid var(--line); background:#fff; border-radius:6px; padding:3px 8px; cursor:pointer;" onclick="copyLogEntry('${entry.key}')">Copy</button>
-          <button style="font-size:12px; border:1px solid var(--line); background:#fff; color:var(--clay); border-radius:6px; padding:3px 8px; cursor:pointer;" onclick="deleteLogEntry('${entry.key}')">Delete</button>
+          <button style="font-size:12px; border:1px solid var(--line); background:var(--paper-raised); color:var(--ink); border-radius:6px; padding:3px 8px; cursor:pointer;" onclick="copyLogEntry('${entry.key}')">Copy</button>
+          <button style="font-size:12px; border:1px solid var(--line); background:var(--paper-raised); color:var(--clay); border-radius:6px; padding:3px 8px; cursor:pointer;" onclick="deleteLogEntry('${entry.key}')">Delete</button>
         </div>
       </div>
       <pre style="white-space:pre-wrap; font-family:'JetBrains Mono',monospace; font-size:12px; margin:0; color:var(--ink);">${entry.summary}</pre>
@@ -821,16 +902,19 @@ async function resetForm(){
   fields.forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
   document.getElementById('returningClient').checked = false;
   document.getElementById('referralWrap').classList.add('show');
+  document.getElementById('asapToggle').checked = false;
+  document.getElementById('asapDeadlineWrap').classList.remove('show');
   document.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('picked'));
   groups.followupMethod = null;
   groups.bestTime = null;
+  groups.colorsSelected = null;
   document.querySelectorAll('.swatch').forEach(b=>b.classList.remove('selected'));
   document.getElementById('companyFieldWrap').style.display = 'none';
   document.getElementById('resNameWrap').style.display = 'block';
   projectType = null;
   document.body.classList.remove('com');
   currentStep = 0;
-  [1,2,3].forEach(i=> document.getElementById('step'+i).classList.remove('active'));
+  [1,2,3,4].forEach(i=> document.getElementById('step'+i).classList.remove('active'));
   callStart = Date.now();
   updateDots();
   document.body.classList.add('pre-call');
