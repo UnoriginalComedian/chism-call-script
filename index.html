@@ -1003,60 +1003,112 @@ window.addEventListener('beforeunload', (e)=>{
 });
 
 function buildSummary(){
-  const type = projectType ? (projectType[0].toUpperCase()+projectType.slice(1)) : 'Not selected';
   const returning = document.getElementById('returningClient').checked;
-  let lines = [];
-  lines.push(`CHISM BROTHERS PAINTING — CALL SUMMARY`);
-  lines.push(`Taken by: ${getVal('agentName') || '—'}  |  ${new Date().toLocaleString()}`);
-  lines.push(``);
+  const isAsap    = document.getElementById('asapToggle').checked;
+  const category  = getVal('scopeOfWork');          // e.g. "Residential Exterior"
+  const agent     = getVal('agentName');
+  const missing   = [];
 
-  // WHO
-  if(projectType==='commercial'){
-    lines.push(`Company: ${getVal('companyName') || '—'}`);
-    lines.push(`Contact Name: ${getVal('contactName') || '—'}`);
+  // M/D/YY — the call/lead date, the format the pipeline entry starts with
+  const d = new Date();
+  const callDate = `${d.getMonth()+1}/${d.getDate()}/${String(d.getFullYear()).slice(-2)}`;
+
+  // Pipeline uses dotted phone numbers: 619.272.1224
+  const digits = getVal('phone').replace(/\D/g,'').slice(-10);
+  const phoneDotted = digits.length === 10
+    ? `${digits.slice(0,3)}.${digits.slice(3,6)}.${digits.slice(6)}`
+    : getVal('phone');
+
+  const initials = agent
+    ? agent.trim().split(/\s+/).map(w => w[0].toUpperCase()).join('')
+    : '';
+
+  const L = [];
+  const add   = (label, val, key) => {
+    if(val) L.push(`${label}: ${val}`);
+    else if(key) missing.push(key);
+  };
+
+  L.push('CHISM BROTHERS PAINTING — CALL SUMMARY');
+  L.push(`Call date: ${callDate}`);
+  L.push(`Logged by: ${agent || '(not entered)'}${initials ? ` (${initials})` : ''}`);
+  const secs = callActive ? Math.floor((Date.now()-callStart)/1000) : 0;
+  L.push(`Call length: ${String(Math.floor(secs/60)).padStart(2,'0')}:${String(secs%60).padStart(2,'0')}`);
+
+  L.push('');
+  L.push('CUSTOMER');
+  if(projectType === 'commercial'){
+    add('Company', getVal('companyName'), 'company name');
+    add('Contact', getVal('contactName'), 'contact name');
   } else {
-    lines.push(`Caller Name: ${getVal('callerName') || '—'}`);
+    add('Name', getVal('callerName'), 'customer name');
   }
-  lines.push(`Phone: ${getVal('phone') || '—'}`);
-  lines.push(`Email: ${getVal('email') || '—'}`);
-  lines.push(`Property Address: ${getVal('address') || '—'}`);
-  lines.push(``);
+  add('Phone',   phoneDotted,        'phone');
+  add('Email',   getVal('email'),    'email');
+  add('Address', getVal('address'),  'address');
 
-  // PROJECT
-  lines.push(`Project Type: ${type}`);
-  lines.push(`Project Category: ${getVal('scopeOfWork') || '—'}`);
-  lines.push(`Why Painting: ${getVal('whyPainting') || '—'}`);
-  lines.push(`Surfaces Needing Paint: ${getVal('surfacesNeeded') || '—'}`);
-  lines.push(`Last Painted: ${getVal('lastPainted') || '—'}`);
-  lines.push(`Colors Selected: ${groups.colorsSelected || '—'}`);
-  lines.push(`Start Timeframe: ${getVal('startTimeframe') || '—'}`);
-  const isAsap = document.getElementById('asapToggle').checked;
-  lines.push(`ASAP: ${isAsap ? 'Yes' : 'No'}`);
+  L.push('');
+  L.push('PROJECT');
+  if(category){
+    // "Residential Exterior" -> "Residential — Exterior"; "Cabinets" stays as-is
+    const m = category.match(/^(Residential|Commercial)\s+(.*)$/);
+    L.push(`Type: ${m ? `${m[1]} — ${m[2]}` : category}`);
+  } else {
+    missing.push('project category');
+  }
+
+  // Scope lines — one item per line, ready to drop into the pipeline scope block
+  const scope = [];
+  if(category){
+    if(/Exterior/i.test(category))  scope.push('Exterior repaint');
+    if(/Interior/i.test(category))  scope.push('Interior repaint');
+    if(/Cabinets/i.test(category))  scope.push('Cabinet refinishing');
+    if(/All Types/i.test(category)) scope.push('Interior and exterior repaint');
+  }
+  getVal('surfacesNeeded').split(/\s*,\s*/).filter(Boolean).forEach(sf=>{
+    const t = sf.trim();
+    scope.push(t.charAt(0).toUpperCase() + t.slice(1));
+  });
+  if(scope.length){
+    L.push('Scope:');
+    scope.forEach(line => L.push(`  ${line}`));
+  } else {
+    missing.push('scope / surfaces');
+  }
+
+  add('Why painting',     getVal('whyPainting'),   'why painting');
+  add('Last painted',     getVal('lastPainted'),   'last painted');
+  add('Colors selected',  groups.colorsSelected,   'colors');
+  add('Timeframe',        getVal('startTimeframe'),'timeframe');
   if(isAsap){
-    lines.push(`Target Deadline: ${getVal('asapDeadline') || '—'}`);
+    L.push('ASAP: Yes');
+    add('Target deadline', getVal('asapDeadline'), 'ASAP deadline');
   }
-  lines.push(`Budget Range: ${groups.budgetRange || '—'}`);
-  lines.push(``);
+  add('Budget', groups.budgetRange, 'budget');
 
-  // NEXT STEPS
+  L.push('');
+  L.push('NEXT STEPS');
   if(projectType){
-    const estimator = projectType==='commercial' ? ESTIMATORS.commercial : ESTIMATORS.residential;
-    lines.push(`Estimator: ${estimator.name}`);
+    L.push(`Estimator: ${(projectType==='commercial' ? ESTIMATORS.commercial : ESTIMATORS.residential).name}`);
   }
-  lines.push(`Follow-up Method: ${groups.followupMethod || '—'}`);
-  lines.push(`Best Time to Reach: ${groups.bestTime || '—'}`);
-  lines.push(`Returning Client: ${returning ? 'Yes' : 'No'}`);
-  if(!returning){
-    lines.push(`Lead Source: ${getVal('referralSource') || '—'}`);
-  }
+  L.push(`Returning client: ${returning ? 'Previous customer — check last job date' : 'Not a returning client'}`);
+  if(!returning) add('Lead source', getVal('referralSource'), 'lead source');
+  add('Follow-up method', groups.followupMethod, 'follow-up method');
+  add('Best time to reach', groups.bestTime,     'best time to reach');
+  L.push('Appointment: not booked on this call');
+
   if(getVal('scratchPad')){
-    lines.push(`Notes: ${getVal('scratchPad')}`);
+    L.push('');
+    L.push('RAW NOTES');
+    L.push(getVal('scratchPad'));
   }
-  const s = callActive ? Math.floor((Date.now()-callStart)/1000) : 0;
-  const m = String(Math.floor(s/60)).padStart(2,'0');
-  const sec = String(s%60).padStart(2,'0');
-  lines.push(`Call Length: ${m}:${sec}`);
-  return lines.join('\n');
+
+  if(missing.length){
+    L.push('');
+    L.push(`Not captured on this call: ${missing.join(', ')}`);
+  }
+
+  return L.join('\n');
 }
 
 function copySummary(){
